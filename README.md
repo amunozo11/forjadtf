@@ -48,6 +48,24 @@ conserva el antialias del contorno en vez de dejarlo dentado.
   tela, y **punto mínimo / máximo** para descartar puntos que no agarrarían y
   evitar que las sombras se cierren en mancha.
 
+### Vista y zoom
+Rueda para ampliar, arrastrar para mover, **Ajustar** y **1:1**.
+
+El zoom no amplía una previsualización pequeña: **recalcula la región visible a
+la resolución del archivo final**. Al 1:1, un píxel de pantalla es un píxel del
+PNG, así que estás viendo el punto de trama exacto que se va a imprimir, con la
+misma fase de trama que tendrá el archivo. Es la única forma de juzgar si el
+punto aguanta antes de gastar film.
+
+### Ajustes guardados
+Guarda combinaciones completas con nombre — tu impresora, tus prendas, tus
+lineaturas — y recupéralas de un clic. Se quedan en tu navegador.
+
+### Precisión
+Cada deslizador lleva su casilla numérica: puedes teclear el valor exacto en
+vez de buscarlo arrastrando. Los ángulos de cada tinta CMYK son editables uno
+a uno.
+
 ### Degradados posicionales
 Por **lados**, **radial** (con centro, radio sólido y radio final) o **lineal
 en cualquier ángulo** con posición y recorrido. Todos se resuelven en puntos
