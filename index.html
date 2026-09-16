@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Prepara cualquier diseno para film DTF: quita el fondo, elimina la semitransparencia y resuelve los degradados en semitono.">
+<meta name="description" content="Prepara cualquier diseno para film DTF: recorte con despill y choke, semitono CMYK real, degradados radiales y alfa sin semitransparencias.">
 <meta name="theme-color" content="#14171C">
 <title>Forja DTF</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
     --bg:#EDEDEA; --panel:#FFFFFF; --panel-2:#F5F5F2; --line:#D6D6D0;
     --line-soft:#E4E4DE; --fg:#14171C; --fg-2:#5A6069; --fg-3:#878D96;
     --accent:#0E7C9B; --accent-ink:#FFFFFF; --accent-soft:#DDF0F6;
-    --warn:#A8720C; --warn-soft:#FBF0D8; --ok:#2F7D4F; --ok-soft:#DFF0E5;
+    --warn:#A8720C; --warn-soft:#FBF0D8; --ok:#2F7D4F;
     --shadow:0 1px 2px rgba(20,23,28,.07), 0 6px 18px rgba(20,23,28,.05);
     --r:7px;
   }
@@ -22,7 +22,7 @@
       --bg:#14171C; --panel:#1B1F26; --panel-2:#232831; --line:#333A45;
       --line-soft:#262C35; --fg:#E6E9EE; --fg-2:#97A0AE; --fg-3:#6D7683;
       --accent:#3FBEE0; --accent-ink:#0B1216; --accent-soft:#16323C;
-      --warn:#E0A83C; --warn-soft:#332810; --ok:#5FC98C; --ok-soft:#12291C;
+      --warn:#E0A83C; --warn-soft:#332810; --ok:#5FC98C;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.28);
     }
   }
@@ -30,7 +30,7 @@
     --bg:#14171C; --panel:#1B1F26; --panel-2:#232831; --line:#333A45;
     --line-soft:#262C35; --fg:#E6E9EE; --fg-2:#97A0AE; --fg-3:#6D7683;
     --accent:#3FBEE0; --accent-ink:#0B1216; --accent-soft:#16323C;
-    --warn:#E0A83C; --warn-soft:#332810; --ok:#5FC98C; --ok-soft:#12291C;
+    --warn:#E0A83C; --warn-soft:#332810; --ok:#5FC98C;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.28);
   }
 
@@ -38,167 +38,122 @@
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--fg);
-    font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
-    font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+    font-family:Archivo,"Helvetica Neue",Arial,sans-serif; font-size:14px;
+    line-height:1.45; -webkit-font-smoothing:antialiased;
   }
   .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
         font-variant-numeric:tabular-nums}
 
-  /* ---------- armazon ---------- */
-  .wrap{min-height:100%; display:flex; flex-direction:column; padding:0 16px; padding-block:0}
-  header{
-    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
-    padding:18px 0 14px; border-bottom:1px solid var(--line);
-  }
-  h1{
-    margin:0; font-size:19px; font-weight:700; letter-spacing:-.015em;
-  }
-  h1 b{color:var(--accent); font-weight:700}
-  .tag{
-    font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
-    color:var(--fg-3); font-weight:600;
-  }
+  .wrap{min-height:100%; display:flex; flex-direction:column; padding:0 16px}
+  header{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+         padding:18px 0 14px; border-bottom:1px solid var(--line)}
+  h1{margin:0; font-size:19px; font-weight:700; letter-spacing:-.015em}
+  h1 b{color:var(--accent)}
+  .tag{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em;
+       color:var(--fg-3); font-weight:600}
   .grow{flex:1}
 
-  main{
-    flex:1; display:grid; grid-template-columns:330px minmax(0,1fr);
-    gap:20px; padding:20px 0 28px; align-items:start;
-  }
-  @media (max-width:860px){ main{grid-template-columns:1fr} }
+  main{flex:1; display:grid; grid-template-columns:344px minmax(0,1fr);
+       gap:20px; padding:20px 0 28px; align-items:start}
+  @media (max-width:900px){ main{grid-template-columns:1fr} }
 
-  /* ---------- controles ---------- */
-  .rail{display:flex; flex-direction:column; gap:12px; min-width:0}
-  .box{
-    background:var(--panel); border:1px solid var(--line);
-    border-radius:var(--r); overflow:hidden;
-  }
-  .box > h2{
-    margin:0; font-size:10.5px; text-transform:uppercase; letter-spacing:.11em;
-    color:var(--fg-2); font-weight:600; padding:10px 13px 9px;
-    border-bottom:1px solid var(--line-soft); background:var(--panel-2);
-    display:flex; align-items:center; gap:7px;
-  }
-  .box > h2 span{
-    font-family:"IBM Plex Mono",monospace; color:var(--accent);
-    letter-spacing:0; font-size:11px;
-  }
+  .rail{display:flex; flex-direction:column; gap:11px; min-width:0}
+  .box{background:var(--panel); border:1px solid var(--line);
+       border-radius:var(--r); overflow:hidden}
+  .box > h2{margin:0; font-size:10.5px; text-transform:uppercase;
+       letter-spacing:.11em; color:var(--fg-2); font-weight:600;
+       padding:10px 13px 9px; border-bottom:1px solid var(--line-soft);
+       background:var(--panel-2); display:flex; align-items:center; gap:7px}
+  .box > h2 span{font-family:"IBM Plex Mono",monospace; color:var(--accent);
+       letter-spacing:0; font-size:11px}
   .body{padding:13px; display:flex; flex-direction:column; gap:11px}
 
   label.f{display:flex; flex-direction:column; gap:5px}
   .f > .lab{font-size:11.5px; color:var(--fg-2); font-weight:500}
-  .row{display:flex; gap:9px; align-items:center; flex-wrap:wrap}
-  .row > .f{flex:1; min-width:96px}
+  .row{display:flex; gap:9px; align-items:flex-end; flex-wrap:wrap}
+  .row > .f{flex:1; min-width:92px}
 
-  select,input[type=number],input[type=text]{
-    width:100%; background:var(--panel-2); color:var(--fg);
-    border:1px solid var(--line); border-radius:5px; padding:7px 8px;
-    font-family:inherit; font-size:13px;
-  }
+  select,input[type=number],input[type=text]{width:100%;
+    background:var(--panel-2); color:var(--fg); border:1px solid var(--line);
+    border-radius:5px; padding:7px 8px; font-family:inherit; font-size:13px}
   input[type=number]{font-family:"IBM Plex Mono",monospace}
+  input[type=color]{width:100%; height:32px; padding:2px; border-radius:5px;
+    border:1px solid var(--line); background:var(--panel-2); cursor:pointer}
   select:focus-visible,input:focus-visible,button:focus-visible{
-    outline:2px solid var(--accent); outline-offset:1px;
-  }
+    outline:2px solid var(--accent); outline-offset:1px}
   input[type=range]{width:100%; accent-color:var(--accent); margin:0}
   .slrow{display:flex; align-items:center; gap:9px}
   .slrow input[type=range]{flex:1}
-  .val{
-    font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--fg);
-    min-width:44px; text-align:right; font-variant-numeric:tabular-nums;
-  }
+  .val{font-family:"IBM Plex Mono",monospace; font-size:12px; min-width:52px;
+    text-align:right; font-variant-numeric:tabular-nums}
 
   .chips{display:flex; gap:5px; flex-wrap:wrap}
-  .chip{
-    flex:1; min-width:52px; text-align:center; cursor:pointer;
+  .chip{flex:1; min-width:48px; text-align:center; cursor:pointer;
     border:1px solid var(--line); background:var(--panel-2); color:var(--fg-2);
     border-radius:5px; padding:6px 4px; font-size:12px; font-weight:500;
-    font-family:inherit;
-  }
-  .chip[aria-pressed="true"]{
-    background:var(--accent); border-color:var(--accent); color:var(--accent-ink);
-    font-weight:600;
-  }
+    font-family:inherit}
+  .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent);
+    color:var(--accent-ink); font-weight:600}
   .chk{display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px}
   .chk input{accent-color:var(--accent); width:15px; height:15px; margin:0}
+  .hint{font-size:11.5px; color:var(--fg-3); line-height:1.4; margin:0}
 
-  .hint{font-size:11.5px; color:var(--fg-3); line-height:1.4}
-
-  button.go{
-    width:100%; padding:11px; border-radius:6px; border:1px solid var(--accent);
-    background:var(--accent); color:var(--accent-ink); font-family:inherit;
-    font-size:14px; font-weight:600; cursor:pointer;
-  }
+  button.go{width:100%; padding:11px; border-radius:6px;
+    border:1px solid var(--accent); background:var(--accent);
+    color:var(--accent-ink); font-family:inherit; font-size:14px;
+    font-weight:600; cursor:pointer}
   button.go:disabled{opacity:.45; cursor:not-allowed}
-  button.ghost{
-    background:var(--panel-2); color:var(--fg); border:1px solid var(--line);
-  }
+  button.ghost{background:var(--panel-2); color:var(--fg); border-color:var(--line)}
+  button.mini{padding:7px 10px; font-size:12px; border-radius:5px;
+    border:1px solid var(--line); background:var(--panel-2); color:var(--fg);
+    font-family:inherit; cursor:pointer; white-space:nowrap}
+  button.mini[aria-pressed="true"]{background:var(--accent);
+    border-color:var(--accent); color:var(--accent-ink)}
 
-  /* ---------- lienzo ---------- */
   .stage{display:flex; flex-direction:column; gap:12px; min-width:0}
-  .viewer{
-    border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
-    background:var(--panel); box-shadow:var(--shadow);
-  }
-  .vbar{
-    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  .viewer{border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
+    background:var(--panel); box-shadow:var(--shadow)}
+  .vbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap;
     padding:9px 12px; border-bottom:1px solid var(--line-soft);
-    background:var(--panel-2);
-  }
-  .swatches{display:flex; gap:5px}
-  .sw{
-    width:26px; height:26px; border-radius:5px; cursor:pointer; padding:0;
-    border:2px solid var(--line);
-  }
+    background:var(--panel-2)}
+  .swatches{display:flex; gap:5px; flex-wrap:wrap}
+  .sw{width:25px; height:25px; border-radius:5px; cursor:pointer; padding:0;
+    border:2px solid var(--line)}
   .sw[aria-pressed="true"]{border-color:var(--accent)}
-  .canvas-pad{
-    display:flex; align-items:center; justify-content:center;
-    padding:18px; min-height:300px;
-  }
-  canvas#view{
-    max-width:100%; max-height:62vh; display:block;
-    image-rendering:auto;
-    box-shadow:0 2px 14px rgba(0,0,0,.22);
-  }
-  .drop{
-    border:2px dashed var(--line); border-radius:var(--r);
+  .sw.custom{width:32px}
+  .canvas-pad{display:flex; align-items:center; justify-content:center;
+    padding:18px; min-height:300px}
+  canvas#view{max-width:100%; max-height:60vh; display:block;
+    box-shadow:0 2px 14px rgba(0,0,0,.22)}
+  canvas#view.pick{cursor:crosshair}
+  .drop{border:2px dashed var(--line); border-radius:var(--r);
     padding:44px 20px; text-align:center; color:var(--fg-2);
-    background:var(--panel-2); cursor:pointer;
-  }
+    background:var(--panel-2); cursor:pointer}
   .drop.over{border-color:var(--accent); background:var(--accent-soft)}
   .drop b{display:block; color:var(--fg); font-size:15px; margin-bottom:4px}
 
-  /* ---------- lectura tecnica ---------- */
-  .readout{
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
+  .readout{display:grid; grid-template-columns:repeat(auto-fit,minmax(126px,1fr));
     gap:1px; background:var(--line); border:1px solid var(--line);
-    border-radius:var(--r); overflow:hidden;
-  }
+    border-radius:var(--r); overflow:hidden}
   .cell{background:var(--panel); padding:9px 12px}
-  .cell .k{
-    font-size:9.5px; text-transform:uppercase; letter-spacing:.09em;
-    color:var(--fg-3); font-weight:600;
-  }
-  .cell .v{
-    font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:500;
-    margin-top:2px; letter-spacing:-.01em;
-  }
+  .cell .k{font-size:9.5px; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--fg-3); font-weight:600}
+  .cell .v{font-family:"IBM Plex Mono",monospace; font-size:15px;
+    font-weight:500; margin-top:2px}
   .cell .v small{font-size:11px; color:var(--fg-2); font-weight:400}
   .cell.good .v{color:var(--ok)}
-  .cell.bad  .v{color:var(--warn)}
+  .cell.bad .v{color:var(--warn)}
 
-  .note{
-    display:flex; gap:9px; padding:10px 12px; border-radius:6px;
+  .note{display:flex; gap:9px; padding:10px 12px; border-radius:6px;
     font-size:12.5px; line-height:1.45; border:1px solid var(--line);
-    background:var(--panel-2); color:var(--fg-2);
-  }
+    background:var(--panel-2); color:var(--fg-2)}
   .note.warn{background:var(--warn-soft); border-color:var(--warn); color:var(--fg)}
   .note b{color:var(--fg)}
   .note .ic{font-family:"IBM Plex Mono",monospace; color:var(--warn); font-weight:600}
 
-  .busy{
-    position:fixed; inset:auto 16px 16px auto; z-index:20;
-    background:var(--panel); border:1px solid var(--accent);
-    border-radius:6px; padding:8px 13px; font-size:12.5px; box-shadow:var(--shadow);
-  }
+  .busy{position:fixed; inset:auto 16px 16px auto; z-index:20;
+    background:var(--panel); border:1px solid var(--accent); border-radius:6px;
+    padding:8px 13px; font-size:12.5px; box-shadow:var(--shadow)}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <style>
@@ -214,13 +169,12 @@
 <div class="wrap">
   <header>
     <h1>Forja <b>DTF</b></h1>
-    <span class="tag">Film · semitono · alfa duro</span>
+    <span class="tag">Recorte · semitono · alfa duro</span>
     <span class="grow"></span>
     <span class="tag mono" id="srcinfo">sin imagen</span>
   </header>
 
   <main>
-    <!-- ================= CONTROLES ================= -->
     <div class="rail">
 
       <div class="box">
@@ -229,36 +183,72 @@
           <button class="go ghost" id="pick" type="button">Elegir imagen…</button>
           <input type="file" id="file" accept="image/*" hidden>
           <label class="f">
-            <span class="lab">Tratamiento</span>
+            <span class="lab">Qué se imprime</span>
             <select id="mode">
-              <option value="lineart-dark">Línea negra — prenda clara</option>
-              <option value="lineart-white">Tinta blanca — prenda oscura</option>
-              <option value="negative">Negativo (invertir todo)</option>
-              <option value="color">Ilustración a color</option>
+              <option value="keep">Conservar los colores del arte</option>
+              <option value="mono">Una sola tinta</option>
+              <option value="whiteink">Tinta clara — conserva la lectura</option>
+              <option value="negative">Negativo (invertir)</option>
             </select>
+          </label>
+          <label class="f" id="inkwrap" hidden>
+            <span class="lab">Color de la tinta</span>
+            <input type="color" id="ink" value="#111111">
           </label>
           <p class="hint" id="modehint"></p>
         </div>
       </div>
 
       <div class="box">
-        <h2><span>02</span> Fondo y alfa</h2>
+        <h2><span>02</span> Recorte del fondo</h2>
         <div class="body">
           <label class="f">
-            <span class="lab">Quitar fondo</span>
-            <select id="bg">
-              <option value="lum">Blanco → transparente (lineart)</option>
-              <option value="flood">Varita desde las esquinas</option>
+            <span class="lab">Método</span>
+            <select id="matte">
+              <option value="contig">Fondo conectado a los bordes</option>
+              <option value="global">Todo ese color, esté donde esté</option>
               <option value="none">Ya tiene transparencia</option>
             </select>
           </label>
+          <div class="row">
+            <label class="f" style="flex:0 0 74px">
+              <span class="lab">Color</span>
+              <input type="color" id="key" value="#ffffff">
+            </label>
+            <button class="mini" id="eye" type="button" aria-pressed="false"
+              style="flex:1">Tomar del arte</button>
+          </div>
           <label class="f">
-            <span class="lab">Tolerancia</span>
+            <span class="lab">Margen — fondo puro</span>
             <span class="slrow">
-              <input type="range" id="tol" min="2" max="120" value="45">
-              <span class="val mono" id="tolv">45</span>
+              <input type="range" id="tin" min="0" max="180" value="26">
+              <span class="val mono" id="tinv">26</span>
             </span>
           </label>
+          <label class="f">
+            <span class="lab">Margen — borde suave</span>
+            <span class="slrow">
+              <input type="range" id="tout" min="1" max="255" value="78">
+              <span class="val mono" id="toutv">78</span>
+            </span>
+          </label>
+          <label class="f">
+            <span class="lab">Limpiar color de borde</span>
+            <span class="slrow">
+              <input type="range" id="spill" min="0" max="100" value="85">
+              <span class="val mono" id="spillv">85 %</span>
+            </span>
+          </label>
+          <div class="row">
+            <label class="f">
+              <span class="lab">Encoger px</span>
+              <input type="number" id="choke" value="1" min="-6" max="6" step="1">
+            </label>
+            <label class="f">
+              <span class="lab">Motas &lt; px</span>
+              <input type="number" id="speck" value="8" min="0" max="500" step="1">
+            </label>
+          </div>
           <label class="f">
             <span class="lab">Umbral de alfa — corta la semitransparencia</span>
             <span class="slrow">
@@ -266,66 +256,151 @@
               <span class="val mono" id="thrv">128</span>
             </span>
           </label>
-          <p class="hint">Bajo conserva más borde y tipografía fina. Alto adelgaza el contorno y limpia halos.</p>
         </div>
       </div>
 
       <div class="box">
         <h2><span>03</span> Semitono</h2>
         <div class="body">
-          <div class="chips" role="group" aria-label="Dónde aplicar el semitono">
+          <div class="chips" role="group" aria-label="Alcance del semitono">
             <button class="chip" type="button" data-ht="off" aria-pressed="true">Ninguno</button>
-            <button class="chip" type="button" data-ht="edges" aria-pressed="false">Bordes</button>
-            <button class="chip" type="button" data-ht="whole" aria-pressed="false">Todo</button>
+            <button class="chip" type="button" data-ht="grad" aria-pressed="false">Solo degradado</button>
+            <button class="chip" type="button" data-ht="all" aria-pressed="false">Todo</button>
           </div>
-          <label class="f">
-            <span class="lab">Trama</span>
-            <select id="screen">
-              <option value="halftone">Semitono (puntos)</option>
-              <option value="dither">Difusión ordenada</option>
+          <label class="f" id="sepwrap" hidden>
+            <span class="lab">Separación</span>
+            <select id="sep">
+              <option value="cmyk">Color completo — CMYK</option>
+              <option value="mono">Una tinta</option>
             </select>
           </label>
+          <label class="f">
+            <span class="lab">Tamaño del punto</span>
+            <span class="slrow">
+              <input type="range" id="dot" min="0.15" max="4" step="0.05" value="0.85">
+              <span class="val mono" id="dotv">0.85 mm</span>
+            </span>
+          </label>
+          <p class="hint" id="dotinfo"></p>
           <div class="row">
             <label class="f">
-              <span class="lab">Lineatura</span>
-              <input type="number" id="lpi" value="40" min="8" max="120" step="1">
+              <span class="lab">Forma</span>
+              <select id="shape">
+                <option value="round">Redondo</option>
+                <option value="ellipse">Elíptico</option>
+                <option value="square">Cuadrado</option>
+                <option value="diamond">Rombo</option>
+                <option value="line">Línea</option>
+                <option value="cross">Cruz</option>
+              </select>
             </label>
-            <label class="f">
+            <label class="f" style="flex:0 0 86px">
               <span class="lab">Ángulo</span>
               <input type="number" id="ang" value="45" min="0" max="180" step="5">
             </label>
           </div>
           <label class="f">
-            <span class="lab">Forma del punto</span>
-            <select id="shape">
-              <option value="round">Redondo</option>
-              <option value="ellipse">Elíptico</option>
-              <option value="square">Cuadrado</option>
-              <option value="diamond">Rombo</option>
-              <option value="line">Línea</option>
-              <option value="cross">Cruz</option>
-            </select>
+            <span class="lab">Ganancia de punto</span>
+            <span class="slrow">
+              <input type="range" id="gain" min="-60" max="60" value="0">
+              <span class="val mono" id="gainv">0 %</span>
+            </span>
           </label>
+          <div class="row">
+            <label class="f">
+              <span class="lab">Punto mínimo %</span>
+              <input type="number" id="dmin" value="0" min="0" max="40" step="1">
+            </label>
+            <label class="f">
+              <span class="lab">Punto máximo %</span>
+              <input type="number" id="dmax" value="100" min="60" max="100" step="1">
+            </label>
+          </div>
+          <p class="hint">La ganancia compensa lo que el punto engorda al curar sobre tela. El mínimo descarta puntos que no agarrarían.</p>
         </div>
       </div>
 
       <div class="box">
-        <h2><span>04</span> Degradado lateral</h2>
+        <h2><span>04</span> Degradado</h2>
         <div class="body">
-          <div class="chips" role="group" aria-label="Lados a difuminar">
-            <button class="chip" type="button" data-side="L" aria-pressed="false">Izq</button>
-            <button class="chip" type="button" data-side="R" aria-pressed="false">Der</button>
-            <button class="chip" type="button" data-side="T" aria-pressed="false">Arriba</button>
-            <button class="chip" type="button" data-side="B" aria-pressed="false">Abajo</button>
-          </div>
           <label class="f">
-            <span class="lab">Ancho</span>
-            <span class="slrow">
-              <input type="range" id="fw" min="3" max="60" value="25">
-              <span class="val mono" id="fwv">25 %</span>
-            </span>
+            <span class="lab">Tipo</span>
+            <select id="grad">
+              <option value="none">Ninguno</option>
+              <option value="sides">Por lados</option>
+              <option value="radial">Radial</option>
+              <option value="linear">Lineal en ángulo</option>
+            </select>
           </label>
-          <p class="hint">El difuminado se resuelve en puntos sólidos, nunca en opacidad. Es lo que evita el borde pegajoso en el film.</p>
+
+          <div id="g-sides" hidden style="display:flex;flex-direction:column;gap:11px">
+            <div class="chips" role="group" aria-label="Lados a difuminar">
+              <button class="chip" type="button" data-side="L" aria-pressed="false">Izq</button>
+              <button class="chip" type="button" data-side="R" aria-pressed="false">Der</button>
+              <button class="chip" type="button" data-side="T" aria-pressed="false">Arriba</button>
+              <button class="chip" type="button" data-side="B" aria-pressed="false">Abajo</button>
+            </div>
+            <label class="f">
+              <span class="lab">Ancho</span>
+              <span class="slrow">
+                <input type="range" id="fw" min="3" max="70" value="25">
+                <span class="val mono" id="fwv">25 %</span>
+              </span>
+            </label>
+          </div>
+
+          <div id="g-radial" hidden style="display:flex;flex-direction:column;gap:11px">
+            <div class="row">
+              <label class="f">
+                <span class="lab">Centro X %</span>
+                <input type="number" id="rcx" value="50" min="-50" max="150" step="1">
+              </label>
+              <label class="f">
+                <span class="lab">Centro Y %</span>
+                <input type="number" id="rcy" value="50" min="-50" max="150" step="1">
+              </label>
+            </div>
+            <label class="f">
+              <span class="lab">Radio sólido</span>
+              <span class="slrow">
+                <input type="range" id="r0" min="0" max="120" value="30">
+                <span class="val mono" id="r0v">30 %</span>
+              </span>
+            </label>
+            <label class="f">
+              <span class="lab">Radio final</span>
+              <span class="slrow">
+                <input type="range" id="r1" min="2" max="160" value="92">
+                <span class="val mono" id="r1v">92 %</span>
+              </span>
+            </label>
+          </div>
+
+          <div id="g-linear" hidden style="display:flex;flex-direction:column;gap:11px">
+            <label class="f">
+              <span class="lab">Ángulo</span>
+              <span class="slrow">
+                <input type="range" id="lang" min="0" max="360" value="0">
+                <span class="val mono" id="langv">0°</span>
+              </span>
+            </label>
+            <label class="f">
+              <span class="lab">Posición</span>
+              <span class="slrow">
+                <input type="range" id="lpos" min="-50" max="120" value="10">
+                <span class="val mono" id="lposv">10 %</span>
+              </span>
+            </label>
+            <label class="f">
+              <span class="lab">Recorrido</span>
+              <span class="slrow">
+                <input type="range" id="lspan" min="3" max="150" value="60">
+                <span class="val mono" id="lspanv">60 %</span>
+              </span>
+            </label>
+          </div>
+
+          <label class="chk" id="invwrap" hidden><input type="checkbox" id="ginv"> Invertir el degradado</label>
         </div>
       </div>
 
@@ -334,8 +409,8 @@
         <div class="body">
           <div class="row">
             <label class="f">
-              <span class="lab">Ancho impreso</span>
-              <input type="number" id="cm" value="28" min="2" max="120" step="0.5">
+              <span class="lab">Ancho impreso cm</span>
+              <input type="number" id="cm" value="28" min="2" max="150" step="0.5">
             </label>
             <label class="f">
               <span class="lab">Resolución</span>
@@ -343,21 +418,23 @@
                 <option value="300">300 ppp</option>
                 <option value="600" selected>600 ppp</option>
                 <option value="900">900 ppp</option>
+                <option value="1200">1200 ppp</option>
               </select>
             </label>
           </div>
           <label class="chk"><input type="checkbox" id="trim" checked> Recortar a la transparencia</label>
+          <label class="chk"><input type="checkbox" id="wbase"> Base blanca bajo la trama de color</label>
           <button class="go" id="save" type="button" disabled>Guardar PNG para el film</button>
         </div>
       </div>
     </div>
 
-    <!-- ================= LIENZO ================= -->
     <div class="stage">
       <div class="viewer">
         <div class="vbar">
           <span class="tag">Prenda</span>
           <span class="swatches" id="sw" role="group" aria-label="Color de prenda"></span>
+          <input type="color" id="gcustom" class="sw custom" value="#3B5323" title="Color libre de prenda">
           <span class="grow"></span>
           <label class="chk"><input type="checkbox" id="grid"> Ver transparencia</label>
         </div>
@@ -369,7 +446,6 @@
           <canvas id="view" hidden></canvas>
         </div>
       </div>
-
       <div class="readout" id="readout"></div>
       <div id="notes" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
@@ -381,401 +457,525 @@
 "use strict";
 
 /* =====================================================================
-   NUCLEO — validado pixel a pixel antes de escribir esta pagina
+   NUCLEO  — cada funcion validada pixel a pixel sobre arte real
    ===================================================================== */
 
-var LUM = function(r,g,b){ return 0.2126*r + 0.7152*g + 0.0722*b; };
-
-/* Clave por luminosidad: el blanco pasa a transparente conservando el
-   antialias del trazo. Lo correcto para un dibujo a linea sobre blanco. */
-function keyWhite(img, lo, hi){
-  var d = img.data, i, L, a;
-  for(i=0;i<d.length;i+=4){
-    L = LUM(d[i],d[i+1],d[i+2]);
-    a = (hi - L)/(hi - lo);
-    a = a<0?0:a>1?1:a;
-    d[i+3] = Math.round(d[i+3]*a);
+/* ---- matte: clave de color con dos umbrales ------------------------
+   Dentro de "fondo puro" el pixel se va entero; entre ese margen y el
+   de "borde suave" cae progresivamente, que es lo que conserva el
+   antialias del contorno en vez de dejarlo dentado.                   */
+function softColorKey(img, key, tIn, tOut, contiguous){
+  var w=img.width, h=img.height, d=img.data, n=w*h;
+  var dist=new Float32Array(n), i, p, dr, dg, db;
+  for(i=0,p=0;i<d.length;i+=4,p++){
+    dr=d[i]-key[0]; dg=d[i+1]-key[1]; db=d[i+2]-key[2];
+    dist[p]=Math.sqrt(dr*dr+dg*dg+db*db);
   }
-}
-
-/* Clave inversa: lo claro es tinta, lo oscuro se deja a la tela. */
-function keyDark(img, lo, hi){
-  var d = img.data, i, L, a;
-  for(i=0;i<d.length;i+=4){
-    if(d[i+3]===0) continue;
-    L = LUM(d[i],d[i+1],d[i+2]);
-    a = (L - lo)/(hi - lo);
-    a = a<0?0:a>1?1:a;
-    d[i+3] = Math.round(d[i+3]*a);
-  }
-}
-
-/* Varita desde las 4 esquinas: respeta los blancos interiores del dibujo. */
-function floodBG(img, tol){
-  var w=img.width, h=img.height, d=img.data;
-  var seen = new Uint8Array(w*h);
-  var stack = [], seeds = [0, w-1, (h-1)*w, h*w-1], ref = [], i, p, x, y, c, ok;
-  for(i=0;i<seeds.length;i++){
-    p = seeds[i];
-    ref.push([d[p*4],d[p*4+1],d[p*4+2]]);
-    if(!seen[p]){ seen[p]=1; stack.push(p); }
-  }
-  var hit = [];
-  while(stack.length){
-    p = stack.pop();
-    ok = false;
-    for(i=0;i<ref.length;i++){
-      c = ref[i];
-      if(Math.abs(d[p*4]-c[0])<=tol && Math.abs(d[p*4+1]-c[1])<=tol && Math.abs(d[p*4+2]-c[2])<=tol){ ok=true; break; }
+  var reach=null, x, y, st;
+  if(contiguous){
+    reach=new Uint8Array(n); st=[];
+    for(x=0;x<w;x++){ st.push(x); st.push((h-1)*w+x); }
+    for(y=0;y<h;y++){ st.push(y*w); st.push(y*w+w-1); }
+    while(st.length){
+      p=st.pop();
+      if(reach[p] || dist[p]>tOut) continue;
+      reach[p]=1;
+      x=p%w; y=(p/w)|0;
+      if(x>0) st.push(p-1);
+      if(x<w-1) st.push(p+1);
+      if(y>0) st.push(p-w);
+      if(y<h-1) st.push(p+w);
     }
-    if(!ok) continue;
-    hit.push(p);
-    x = p % w; y = (p / w)|0;
-    if(x>0     && !seen[p-1]){ seen[p-1]=1; stack.push(p-1); }
-    if(x<w-1   && !seen[p+1]){ seen[p+1]=1; stack.push(p+1); }
-    if(y>0     && !seen[p-w]){ seen[p-w]=1; stack.push(p-w); }
-    if(y<h-1   && !seen[p+w]){ seen[p+w]=1; stack.push(p+w); }
   }
-  for(i=0;i<hit.length;i++) d[hit[i]*4+3] = 0;
+  var t,a;
+  for(p=0;p<n;p++){
+    if(reach && !reach[p]) continue;
+    t=dist[p];
+    a = t<=tIn ? 0 : t>=tOut ? 1 : (t-tIn)/(tOut-tIn);
+    d[p*4+3]=Math.round(d[p*4+3]*a);
+  }
 }
 
-/* EL requisito del DTF: alfa solo 0 o 255, jamas un valor intermedio. */
-function hardenAlpha(img, t){
-  var d = img.data, i;
-  for(i=3;i<d.length;i+=4) d[i] = d[i] >= t ? 255 : 0;
+/* ---- despill: quitar del borde el color que habia detras ------------
+   Sin esto todo recorte deja un halo del color del fondo, que sobre
+   prenda oscura canta muchisimo.                                      */
+function despill(img, key, amount){
+  if(amount<=0) return;
+  var d=img.data,i,c,a,un;
+  for(i=0;i<d.length;i+=4){
+    a=d[i+3]/255;
+    if(a<=0.004||a>=0.996) continue;
+    for(c=0;c<3;c++){
+      un=(d[i+c]-key[c]*(1-a))/a;
+      d[i+c]=Math.round(d[i+c]+(un-d[i+c])*amount);
+    }
+  }
 }
 
+/* ---- choke: encoger (o engordar) el recorte -------------------------
+   Encoger 1 px se come el pixel de transicion que queda siempre.      */
+function chokeMatte(img, r){
+  if(!r) return;
+  var w=img.width,h=img.height,d=img.data,n=w*h;
+  var grow=r<0, rad=Math.abs(r)|0, pass,x,y,k,v,xx,yy,s,tmp;
+  var a=new Uint8ClampedArray(n), b=new Uint8ClampedArray(n), p;
+  for(p=0;p<n;p++) a[p]=d[p*4+3];
+  for(pass=0;pass<2;pass++){
+    var horiz = pass===0;
+    for(y=0;y<h;y++) for(x=0;x<w;x++){
+      v = grow?0:255;
+      for(k=-rad;k<=rad;k++){
+        xx = horiz ? (x+k<0?0:x+k>w-1?w-1:x+k) : x;
+        yy = horiz ? y : (y+k<0?0:y+k>h-1?h-1:y+k);
+        s = a[yy*w+xx];
+        v = grow ? (s>v?s:v) : (s<v?s:v);
+      }
+      b[y*w+x]=v;
+    }
+    tmp=a; a=b; b=tmp;
+  }
+  for(p=0;p<n;p++) d[p*4+3]=a[p];
+}
+
+/* ---- quitar motas sueltas ------------------------------------------ */
+function removeSpecks(img, minPx){
+  if(minPx<=1) return;
+  var w=img.width,h=img.height,d=img.data,n=w*h;
+  var lab=new Int32Array(n), s,p,x,y,q,st,px,cnt,i;
+  for(i=0;i<n;i++) lab[i]=-1;
+  for(s=0;s<n;s++){
+    if(lab[s]!==-1 || d[s*4+3]<128) continue;
+    st=[s]; lab[s]=s; cnt=0; px=[];
+    while(st.length){
+      p=st.pop(); cnt++; px.push(p);
+      x=p%w; y=(p/w)|0;
+      if(x>0){ q=p-1; if(lab[q]===-1&&d[q*4+3]>=128){lab[q]=s;st.push(q);} }
+      if(x<w-1){ q=p+1; if(lab[q]===-1&&d[q*4+3]>=128){lab[q]=s;st.push(q);} }
+      if(y>0){ q=p-w; if(lab[q]===-1&&d[q*4+3]>=128){lab[q]=s;st.push(q);} }
+      if(y<h-1){ q=p+w; if(lab[q]===-1&&d[q*4+3]>=128){lab[q]=s;st.push(q);} }
+    }
+    if(cnt<minPx) for(i=0;i<px.length;i++) d[px[i]*4+3]=0;
+  }
+}
+
+var LUM=function(r,g,b){ return 0.2126*r+0.7152*g+0.0722*b; };
+
+/* lo claro es tinta, lo oscuro se deja a la tela */
+function keyDark(img, lo, hi){
+  var d=img.data,i,L,a;
+  for(i=0;i<d.length;i+=4){
+    if(!d[i+3]) continue;
+    L=LUM(d[i],d[i+1],d[i+2]);
+    a=(L-lo)/(hi-lo); a=a<0?0:a>1?1:a;
+    d[i+3]=Math.round(d[i+3]*a);
+  }
+}
+/* EL requisito del DTF: alfa 0 o 255, nunca un valor intermedio */
+function hardenAlpha(img,t){
+  var d=img.data,i;
+  for(i=3;i<d.length;i+=4) d[i]=d[i]>=t?255:0;
+}
 function invertRGB(img){
-  var d = img.data, i;
+  var d=img.data,i;
   for(i=0;i<d.length;i+=4){ d[i]=255-d[i]; d[i+1]=255-d[i+1]; d[i+2]=255-d[i+2]; }
 }
-function paintInk(img, rgb){
-  var d = img.data, i;
-  for(i=0;i<d.length;i+=4){ d[i]=rgb[0]; d[i+1]=rgb[1]; d[i+2]=rgb[2]; }
+function paintInk(img,c){
+  var d=img.data,i;
+  for(i=0;i<d.length;i+=4){ d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2]; }
 }
 
-/* --------------------- SEMITONO --------------------- */
-var DIST = {
-  round:   function(u,v){ return Math.sqrt(u*u+v*v); },
-  square:  function(u,v){ return Math.max(Math.abs(u),Math.abs(v)); },
-  diamond: function(u,v){ return Math.abs(u)+Math.abs(v); },
-  line:    function(u,v){ return Math.abs(v); },
-  ellipse: function(u,v){ return Math.sqrt(u*u*1.8 + v*v/1.8); },
-  cross:   function(u,v){ return Math.min(Math.abs(u),Math.abs(v)); }
+/* ---- SEMITONO ------------------------------------------------------ */
+var DIST={
+  round:function(u,v){return Math.sqrt(u*u+v*v);},
+  square:function(u,v){return Math.max(Math.abs(u),Math.abs(v));},
+  diamond:function(u,v){return Math.abs(u)+Math.abs(v);},
+  line:function(u,v){return Math.abs(v);},
+  ellipse:function(u,v){return Math.sqrt(u*u*1.8+v*v/1.8);},
+  cross:function(u,v){return Math.min(Math.abs(u),Math.abs(v));}
 };
-
-/* Radio por tono, invertido NUMERICAMENTE.
-   Se muestrea la celda y se ordenan las distancias: ese array ordenado es
-   la inversa exacta de la cobertura, asi que el area entintada coincide
-   con el tono pedido en CUALQUIER forma. Derivar la formula a mano es
-   justo donde se cuela el error (el punto redondo se iba un 6%). */
-var RCACHE = {};
+/* Radio por tono invertido NUMERICAMENTE: se muestrea la celda y se
+   ordenan las distancias; ese array ordenado es la inversa exacta de la
+   cobertura. Asi el area entintada coincide con el tono pedido en
+   cualquier forma (error < 0,5%). La formula cerrada del punto redondo
+   se desviaba un 6% en los tonos altos. */
+var RC={};
 function radiusCurve(shape){
-  if(RCACHE[shape]) return RCACHE[shape];
-  var f = DIST[shape] || DIST.round, N = 192, arr = new Float64Array(N*N), i, j;
-  for(j=0;j<N;j++) for(i=0;i<N;i++) arr[j*N+i] = f((i+0.5)/N-0.5,(j+0.5)/N-0.5);
+  if(RC[shape]) return RC[shape];
+  var f=DIST[shape]||DIST.round, N=192, arr=new Float64Array(N*N), i, j;
+  for(j=0;j<N;j++) for(i=0;i<N;i++) arr[j*N+i]=f((i+0.5)/N-0.5,(j+0.5)/N-0.5);
   arr.sort();
-  RCACHE[shape] = arr;
+  RC[shape]=arr;
   return arr;
 }
-
-/* tone(x,y) -> 0..1 de tinta. Se promedia el tono de cada celda y despues
-   se dibuja su punto: por eso el degradado sale limpio y no ruidoso. */
 function halftoneMask(w,h,tone,cell,angleDeg,shape){
-  var dist = DIST[shape] || DIST.round;
-  var curve = radiusCurve(DIST[shape] ? shape : 'round');
-  var NC = curve.length - 1;
-  var a = angleDeg*Math.PI/180, ca = Math.cos(a), sa = Math.sin(a);
-  var cs = [[0,0],[w,0],[0,h],[w,h]], i, uu, vv;
+  var dist=DIST[shape]||DIST.round;
+  var curve=radiusCurve(DIST[shape]?shape:'round'), NC=curve.length-1;
+  var a=angleDeg*Math.PI/180, ca=Math.cos(a), sa=Math.sin(a);
+  var cs=[[0,0],[w,0],[0,h],[w,h]], i,uu,vv;
   var uMin=1e9,uMax=-1e9,vMin=1e9,vMax=-1e9;
   for(i=0;i<4;i++){
-    uu = (cs[i][0]*ca + cs[i][1]*sa)/cell;
-    vv = (-cs[i][0]*sa + cs[i][1]*ca)/cell;
+    uu=(cs[i][0]*ca+cs[i][1]*sa)/cell; vv=(-cs[i][0]*sa+cs[i][1]*ca)/cell;
     if(uu<uMin)uMin=uu; if(uu>uMax)uMax=uu;
     if(vv<vMin)vMin=vv; if(vv>vMax)vMax=vv;
   }
-  var u0 = Math.floor(uMin)-1, v0 = Math.floor(vMin)-1;
-  var nu = Math.ceil(uMax)-u0+2, nv = Math.ceil(vMax)-v0+2;
-  var sum = new Float32Array(nu*nv), cnt = new Float32Array(nu*nv);
+  var u0=Math.floor(uMin)-1, v0=Math.floor(vMin)-1;
+  var nu=Math.ceil(uMax)-u0+2, nv=Math.ceil(vMax)-v0+2;
+  var sum=new Float32Array(nu*nv), cnt=new Float32Array(nu*nv);
   var x,y,u,v,iu,iv,k,T,du,dv;
-
   for(y=0;y<h;y++) for(x=0;x<w;x++){
-    u = (x*ca + y*sa)/cell; v = (-x*sa + y*ca)/cell;
-    k = (Math.floor(v)-v0)*nu + (Math.floor(u)-u0);
-    sum[k] += tone(x,y); cnt[k]++;
+    u=(x*ca+y*sa)/cell; v=(-x*sa+y*ca)/cell;
+    k=(Math.floor(v)-v0)*nu+(Math.floor(u)-u0);
+    sum[k]+=tone(x,y); cnt[k]++;
   }
-  var out = new Uint8Array(w*h);
+  var out=new Uint8Array(w*h);
   for(y=0;y<h;y++) for(x=0;x<w;x++){
-    u = (x*ca + y*sa)/cell; v = (-x*sa + y*ca)/cell;
-    iu = Math.floor(u); iv = Math.floor(v);
-    k = (iv-v0)*nu + (iu-u0);
-    T = cnt[k] ? sum[k]/cnt[k] : 0;
+    u=(x*ca+y*sa)/cell; v=(-x*sa+y*ca)/cell;
+    iu=Math.floor(u); iv=Math.floor(v);
+    k=(iv-v0)*nu+(iu-u0);
+    T=cnt[k]?sum[k]/cnt[k]:0;
     if(T<=0.004){ out[y*w+x]=0; continue; }
     if(T>=0.996){ out[y*w+x]=1; continue; }
-    du = u-iu-0.5; dv = v-iv-0.5;
-    out[y*w+x] = dist(du,dv) <= curve[Math.round(T*NC)] ? 1 : 0;
+    du=u-iu-0.5; dv=v-iv-0.5;
+    out[y*w+x]= dist(du,dv)<=curve[Math.round(T*NC)] ?1:0;
   }
   return out;
 }
 
-var BAYER = (function(){
-  var m = [[0,32,8,40,2,34,10,42],[48,16,56,24,50,18,58,26],
-           [12,44,4,36,14,46,6,38],[60,28,52,20,62,30,54,22],
-           [3,35,11,43,1,33,9,41],[51,19,59,27,49,17,57,25],
-           [15,47,7,39,13,45,5,37],[63,31,55,23,61,29,53,21]];
-  var f = new Float32Array(64), i, j;
-  for(j=0;j<8;j++) for(i=0;i<8;i++) f[j*8+i] = (m[j][i]+0.5)/64;
-  return f;
-})();
-function ditherMask(w,h,tone){
-  var out = new Uint8Array(w*h), x, y;
-  for(y=0;y<h;y++) for(x=0;x<w;x++)
-    out[y*w+x] = tone(x,y) > BAYER[(y&7)*8+(x&7)] ? 1 : 0;
-  return out;
-}
-
-function fadeRamp(w,h,sides,pct){
-  var fx = Math.max(1, w*pct/100), fy = Math.max(1, h*pct/100);
-  return function(x,y){
-    var m = 1, t;
-    if(sides.L){ t = x/fx;         if(t<m) m=t; }
-    if(sides.R){ t = (w-1-x)/fx;   if(t<m) m=t; }
-    if(sides.T){ t = y/fy;         if(t<m) m=t; }
-    if(sides.B){ t = (h-1-y)/fy;   if(t<m) m=t; }
-    return m>1?1:m<0?0:m;
+/* curva de tinta: ganancia + punto minimo y maximo */
+function inkCurve(gain,dmin,dmax){
+  var g=1+gain/100;
+  return function(v){
+    if(v<=0) return 0;
+    var t=Math.pow(v,1/g);
+    t=dmin/100 + t*(dmax-dmin)/100;
+    return t>1?1:t<0?0:t;
   };
 }
 
-function applyMask(img, mask){
-  var d = img.data, i, p;
-  for(i=0,p=0;i<d.length;i+=4,p++) if(!mask[p]) d[i+3]=0;
-}
-
-function measure(img){
-  var d = img.data, i, op=0, part=0;
-  for(i=3;i<d.length;i+=4){
-    if(d[i]===255) op++; else if(d[i]!==0) part++;
-  }
-  return {ink:op, partial:part, total:d.length/4};
-}
-
-function contentBox(img){
-  var w=img.width,h=img.height,d=img.data,x,y;
-  var x0=w,y0=h,x1=-1,y1=-1;
+/* SEMITONO CMYK: una trama por tinta con su angulo clasico.
+   Los angulos separados (C15 M75 Y0 K45) son lo que evita el muare y
+   produce la roseta de imprenta. */
+function cmykHalftone(img, cell, shape, gain, dmin, dmax, ramp, whiteBase){
+  var w=img.width,h=img.height,d=img.data,n=w*h;
+  var C=new Float32Array(n),M=new Float32Array(n),
+      Y=new Float32Array(n),K=new Float32Array(n),A=new Float32Array(n);
+  var cv=inkCurve(gain,dmin,dmax);
+  var p,i,al,r,g,b,k,x,y,rm;
   for(y=0;y<h;y++) for(x=0;x<w;x++){
-    if(d[(y*w+x)*4+3]){
-      if(x<x0)x0=x; if(x>x1)x1=x;
-      if(y<y0)y0=y; if(y>y1)y1=y;
+    p=y*w+x; i=p*4; al=d[i+3]/255;
+    rm = ramp?ramp(x,y):1;
+    A[p]=al;
+    if(al<0.004){ continue; }
+    r=d[i]/255; g=d[i+1]/255; b=d[i+2]/255;
+    k=1-Math.max(r,g,b);
+    K[p]=cv(k*al*rm);
+    if(k<0.999){
+      C[p]=cv((1-r-k)/(1-k)*al*rm);
+      M[p]=cv((1-g-k)/(1-k)*al*rm);
+      Y[p]=cv((1-b-k)/(1-k)*al*rm);
     }
   }
-  if(x1<0) return null;
-  return {x:x0,y:y0,w:x1-x0+1,h:y1-y0+1};
+  function mk(arr,ang){
+    return halftoneMask(w,h,function(x,y){ return arr[y*w+x]; },cell,ang,shape);
+  }
+  var mc=mk(C,15), mm=mk(M,75), my=mk(Y,0), mkk=mk(K,45);
+  var rr,gg,bb,ink;
+  for(p=0;p<n;p++){
+    i=p*4;
+    if(A[p]<0.004){ d[i+3]=0; continue; }
+    rr=1; gg=1; bb=1;
+    if(mc[p]) rr=0;                       // cian     resta rojo
+    if(mm[p]) gg=0;                       // magenta  resta verde
+    if(my[p]) bb=0;                       // amarillo resta azul
+    if(mkk[p]){ rr=0; gg=0; bb=0; }
+    ink = mc[p]||mm[p]||my[p]||mkk[p];
+    if(ink){ d[i]=rr*255; d[i+1]=gg*255; d[i+2]=bb*255; d[i+3]=255; }
+    else if(whiteBase){ d[i]=255; d[i+1]=255; d[i+2]=255; d[i+3]=255; }
+    else d[i+3]=0;
+  }
+}
+
+/* ---- DEGRADADOS POSICIONALES --------------------------------------- */
+function rampSides(w,h,s,pct){
+  var fx=Math.max(1,w*pct/100), fy=Math.max(1,h*pct/100);
+  return function(x,y){
+    var m=1,t;
+    if(s.L){ t=x/fx; if(t<m)m=t; }
+    if(s.R){ t=(w-1-x)/fx; if(t<m)m=t; }
+    if(s.T){ t=y/fy; if(t<m)m=t; }
+    if(s.B){ t=(h-1-y)/fy; if(t<m)m=t; }
+    return m>1?1:m<0?0:m;
+  };
+}
+function rampRadial(w,h,cx,cy,r0,r1){
+  var px=cx/100*w, py=cy/100*h;
+  var half=Math.sqrt(w*w+h*h)/2, a=r0/100*half, b=r1/100*half;
+  return function(x,y){
+    var dx=x-px, dy=y-py, t=Math.sqrt(dx*dx+dy*dy), m;
+    m = b===a ? (t<=a?1:0) : 1-(t-a)/(b-a);
+    return m>1?1:m<0?0:m;
+  };
+}
+function rampLinear(w,h,angDeg,pos,span){
+  var a=angDeg*Math.PI/180, ca=Math.cos(a), sa=Math.sin(a);
+  var L=Math.abs(w*ca)+Math.abs(h*sa);
+  var cx=w/2, cy=h/2;
+  var s0=(pos/100-0.5)*L, sp=Math.max(1,span/100*L);
+  return function(x,y){
+    var u=(x-cx)*ca+(y-cy)*sa, m=(u-s0)/sp;
+    return m>1?1:m<0?0:m;
+  };
+}
+function invRamp(f){ return function(x,y){ return 1-f(x,y); }; }
+
+function applyMask(img,mask){
+  var d=img.data,i,p;
+  for(i=0,p=0;i<d.length;i+=4,p++) if(!mask[p]) d[i+3]=0;
+}
+function measure(img){
+  var d=img.data,i,op=0,part=0;
+  for(i=3;i<d.length;i+=4){ if(d[i]===255) op++; else if(d[i]!==0) part++; }
+  return {ink:op, partial:part, total:d.length/4};
+}
+function contentBox(img){
+  var w=img.width,h=img.height,d=img.data,x,y,x0=w,y0=h,x1=-1,y1=-1;
+  for(y=0;y<h;y++) for(x=0;x<w;x++) if(d[(y*w+x)*4+3]){
+    if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;
+  }
+  return x1<0?null:{x:x0,y:y0,w:x1-x0+1,h:y1-y0+1};
+}
+function hex2rgb(s){
+  return [parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),parseInt(s.slice(5,7),16)];
 }
 
 /* =====================================================================
    PIPELINE
    ===================================================================== */
-function build(srcCanvas, W, H, o){
-  var c = document.createElement('canvas');
-  c.width = W; c.height = H;
-  var ctx = c.getContext('2d', {willReadFrequently:true});
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(srcCanvas, 0, 0, W, H);
-  var img = ctx.getImageData(0,0,W,H);
+function build(srcCanvas,W,H,o){
+  var c=document.createElement('canvas');
+  c.width=W; c.height=H;
+  var ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  ctx.drawImage(srcCanvas,0,0,W,H);
+  var img=ctx.getImageData(0,0,W,H);
+  var key=hex2rgb(o.key), s=Math.max(0.25,W/1000);
 
-  // --- 1. fondo -------------------------------------------------------
-  if(o.bg === 'flood')      floodBG(img, o.tol);
-  else if(o.bg === 'lum')   keyWhite(img, 40, 215 + (o.tol-45)*0.4);
-
-  // --- 2. tratamiento del arte ---------------------------------------
-  if(o.mode === 'lineart-white'){
-    // la silueta viene de la varita; dentro, lo claro es tinta blanca y
-    // lo oscuro se deja a la tela. Asi el dibujo se LEE igual que el original.
-    if(o.bg !== 'flood') floodBG(img, o.tol);
-    keyDark(img, 45, 225);
+  // 1. recorte
+  if(o.matte!=='none'){
+    softColorKey(img,key,o.tin,Math.max(o.tin+1,o.tout),o.matte==='contig');
+    despill(img,key,o.spill/100);
+    if(o.choke) chokeMatte(img,Math.round(o.choke*s));
+    if(o.speck>0) removeSpecks(img,Math.round(o.speck*s*s));
   }
 
-  // --- 3. semitono, sobre el alfa suave (antes de endurecer) ----------
-  var ramp = (o.sides.L||o.sides.R||o.sides.T||o.sides.B)
-             ? fadeRamp(W,H,o.sides,o.fw) : null;
-  if(o.ht !== 'off' && (ramp || o.ht === 'whole')){
-    var d = img.data;
-    var tone;
-    if(o.ht === 'whole'){
-      tone = ramp ? function(x,y){ return d[(y*W+x)*4+3]/255 * ramp(x,y); }
-                  : function(x,y){ return d[(y*W+x)*4+3]/255; };
+  // 2. tratamiento del arte
+  if(o.mode==='whiteink') keyDark(img,45,225);
+
+  // 3. degradado posicional
+  var ramp=null;
+  if(o.grad==='sides' && (o.sides.L||o.sides.R||o.sides.T||o.sides.B))
+    ramp=rampSides(W,H,o.sides,o.fw);
+  else if(o.grad==='radial') ramp=rampRadial(W,H,o.rcx,o.rcy,o.r0,o.r1);
+  else if(o.grad==='linear') ramp=rampLinear(W,H,o.lang,o.lpos,o.lspan);
+  if(ramp && o.ginv) ramp=invRamp(ramp);
+
+  // 4. semitono
+  var cmyk = o.ht==='all' && o.sep==='cmyk' && o.mode==='keep';
+  if(cmyk){
+    cmykHalftone(img,o.cell,o.shape,o.gain,o.dmin,o.dmax,ramp,o.wbase);
+  } else if(o.ht!=='off' && (ramp || o.ht==='all')){
+    var d=img.data, cv=inkCurve(o.gain,o.dmin,o.dmax), tone;
+    if(o.ht==='all'){
+      tone = ramp
+        ? function(x,y){ return cv(d[(y*W+x)*4+3]/255*ramp(x,y)); }
+        : function(x,y){ return cv(d[(y*W+x)*4+3]/255); };
     } else {
-      tone = ramp ? ramp : function(){ return 1; };
+      tone = ramp ? function(x,y){ return cv(ramp(x,y)); } : function(){ return 1; };
     }
-    var mask = o.screen === 'dither'
-      ? ditherMask(W,H,tone)
-      : halftoneMask(W,H,tone,o.cell,o.ang,o.shape);
-    applyMask(img, mask);
+    applyMask(img,halftoneMask(W,H,tone,o.cell,o.ang,o.shape));
   } else if(ramp){
-    // sin trama pero con degradado: se difumina y luego el umbral corta
-    var dd = img.data, x, y;
-    for(y=0;y<H;y++) for(x=0;x<W;x++) dd[(y*W+x)*4+3] *= ramp(x,y);
+    var dd=img.data,x,y;
+    for(y=0;y<H;y++) for(x=0;x<W;x++) dd[(y*W+x)*4+3]*=ramp(x,y);
   }
 
-  // --- 4. alfa binario. SIEMPRE el ultimo paso -----------------------
-  hardenAlpha(img, o.thr);
+  // 5. alfa binario — SIEMPRE lo ultimo que toca el alfa
+  hardenAlpha(img,o.thr);
 
-  // --- 5. color de tinta ---------------------------------------------
-  if(o.mode === 'negative')          invertRGB(img);
-  else if(o.mode === 'lineart-white') paintInk(img, [255,255,255]);
-  else if(o.mode === 'lineart-dark')  paintInk(img, [17,17,17]);
+  // 6. color de la tinta
+  if(o.mode==='negative') invertRGB(img);
+  else if(o.mode==='mono' || (o.mode==='whiteink')) paintInk(img,hex2rgb(o.ink));
 
   ctx.putImageData(img,0,0);
   return {canvas:c, img:img};
 }
 
 /* =====================================================================
-   ESTADO E INTERFAZ
+   INTERFAZ
    ===================================================================== */
-var $ = function(id){ return document.getElementById(id); };
-var src = null, srcW = 0, srcH = 0, lastFull = null, busyEl = null;
+var $=function(i){ return document.getElementById(i); };
+var src=null, srcW=0, srcH=0, busyEl=null, picking=false, lastScale=1;
 
-var o = {
-  mode:'lineart-dark', bg:'lum', tol:45, thr:128,
-  ht:'off', screen:'halftone', lpi:40, ang:45, shape:'round',
-  sides:{L:false,R:false,T:false,B:false}, fw:25,
-  cm:28, dpi:600, trim:true, cell:15
+var o={
+  mode:'keep', ink:'#111111',
+  matte:'contig', key:'#ffffff', tin:26, tout:78, spill:85, choke:1, speck:8, thr:128,
+  ht:'off', sep:'cmyk', dotmm:0.85, shape:'round', ang:45, gain:0, dmin:0, dmax:100,
+  grad:'none', sides:{L:false,R:false,T:false,B:false}, fw:25,
+  rcx:50, rcy:50, r0:30, r1:92, lang:0, lpos:10, lspan:60, ginv:false,
+  cm:28, dpi:600, trim:true, wbase:false, cell:20
 };
 
-var GARMENTS = [
-  ['#FFFFFF','Blanco'], ['#1A1A1C','Negro'], ['#9AA0A6','Gris'],
-  ['#1F3A5F','Marino'], ['#7A1F26','Granate'], ['#D9CBB2','Arena']
-];
-var garment = '#FFFFFF';
+var GARMENTS=[['#FFFFFF','Blanco'],['#1A1A1C','Negro'],['#9AA0A6','Gris'],
+  ['#1F3A5F','Marino'],['#7A1F26','Granate'],['#3B5323','Militar'],
+  ['#D9CBB2','Arena'],['#C9A227','Mostaza']];
+var garment='#FFFFFF';
 
-var HINTS = {
-  'lineart-dark':'El trazo negro se imprime tal cual y el blanco se deja a la tela. Para manga, tinta y stencil sobre prenda clara.',
-  'lineart-white':'La silueta se rellena con tinta blanca y los negros se dejan transparentes: sobre tela oscura el dibujo se lee igual que el original y gasta muy poca tinta.',
-  'negative':'Invierte todo el arte. Las masas sólidas cambian de signo — es un efecto, no la lectura original.',
-  'color':'Conserva los colores del arte. Para ilustración y fotografía.'
+var HINTS={
+  keep:'Mantiene los colores tal cual. Con el semitono en «Todo» hace separación CMYK real: cuatro tramas con sus ángulos de imprenta.',
+  mono:'Todo el arte en un solo color de tinta. El clásico de serigrafía, y lo más barato de imprimir.',
+  whiteink:'Rellena de tinta las zonas claras y deja las oscuras transparentes. Sobre prenda oscura el dibujo se lee igual que el original gastando una fracción de tinta.',
+  negative:'Invierte el arte entero. Las masas sólidas cambian de signo: es un efecto, no la lectura original.'
 };
+
+function syncUI(){
+  $('inkwrap').hidden = !(o.mode==='mono'||o.mode==='whiteink');
+  $('sepwrap').hidden = !(o.ht==='all' && o.mode==='keep');
+  $('g-sides').hidden  = o.grad!=='sides';
+  $('g-radial').hidden = o.grad!=='radial';
+  $('g-linear').hidden = o.grad!=='linear';
+  $('invwrap').hidden  = o.grad==='none';
+  $('modehint').textContent = HINTS[o.mode];
+  o.cell = Math.max(2, o.dotmm/25.4*o.dpi);
+  var lpi = 25.4/o.dotmm;
+  $('dotinfo').textContent = '≈ ' + lpi.toFixed(0) + ' lpi · ' +
+    o.cell.toFixed(1) + ' px por celda a ' + o.dpi + ' ppp';
+}
 
 function drawSwatches(){
-  var host = $('sw'); host.innerHTML = '';
+  var host=$('sw'); host.innerHTML='';
   GARMENTS.forEach(function(g){
-    var b = document.createElement('button');
-    b.type = 'button'; b.className = 'sw'; b.style.background = g[0];
-    b.title = g[1]; b.setAttribute('aria-label','Prenda '+g[1]);
-    b.setAttribute('aria-pressed', g[0]===garment ? 'true':'false');
-    b.onclick = function(){ garment = g[0]; drawSwatches(); render(); };
+    var b=document.createElement('button');
+    b.type='button'; b.className='sw'; b.style.background=g[0];
+    b.title=g[1]; b.setAttribute('aria-label','Prenda '+g[1]);
+    b.setAttribute('aria-pressed', g[0].toLowerCase()===garment.toLowerCase()?'true':'false');
+    b.onclick=function(){ garment=g[0]; drawSwatches(); render(); };
     host.appendChild(b);
   });
 }
 
 function exportSize(){
-  var W = Math.max(8, Math.round(o.cm/2.54*o.dpi));
-  var H = Math.max(8, Math.round(W * srcH/srcW));
-  return [W,H];
+  var W=Math.max(8,Math.round(o.cm/2.54*o.dpi));
+  return [W, Math.max(8,Math.round(W*srcH/srcW))];
 }
 
-var timer = null;
-function schedule(){ clearTimeout(timer); timer = setTimeout(render, 90); }
+var timer=null;
+function schedule(){ clearTimeout(timer); timer=setTimeout(render,110); }
 
 function render(){
   if(!src) return;
-  var ex = exportSize(), EW = ex[0], EH = ex[1];
-  var scale = Math.min(1, 780/Math.max(EW,EH));
-  var W = Math.max(8, Math.round(EW*scale)), H = Math.max(8, Math.round(EH*scale));
+  syncUI();
+  var ex=exportSize(), EW=ex[0], EH=ex[1];
+  var scale=Math.min(1,720/Math.max(EW,EH));
+  lastScale=scale;
+  var W=Math.max(8,Math.round(EW*scale)), H=Math.max(8,Math.round(EH*scale));
 
-  o.cell = o.dpi / o.lpi;
-  var po = Object.create(o);
-  po.cell = Math.max(2, o.cell*scale);
+  var po=Object.create(o);
+  po.cell=Math.max(2,o.cell*scale);
 
-  var r = build(src, W, H, po);
-  var cv = $('view');
-  cv.width = W; cv.height = H;
-  var ctx = cv.getContext('2d');
-
+  var r=build(src,W,H,po);
+  var cv=$('view');
+  cv.width=W; cv.height=H;
+  var ctx=cv.getContext('2d');
   if($('grid').checked){
-    var s = 12, x, y;
+    var s=12,x,y;
     for(y=0;y<H;y+=s) for(x=0;x<W;x+=s){
-      ctx.fillStyle = ((x/s|0)+(y/s|0))%2 ? '#d8d8d4' : '#f2f2ef';
+      ctx.fillStyle=((x/s|0)+(y/s|0))%2?'#d8d8d4':'#f2f2ef';
       ctx.fillRect(x,y,s,s);
     }
   } else {
-    ctx.fillStyle = garment;
-    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=garment; ctx.fillRect(0,0,W,H);
   }
   ctx.drawImage(r.canvas,0,0);
-
-  readout(r.img, EW, EH);
+  readout(r.img,EW,EH);
 }
 
-function readout(img, EW, EH){
-  var m = measure(img);
-  var pct = (m.ink/m.total*100);
-  var pxCell = o.dpi/o.lpi;
-  var cellMm = 25.4/o.lpi;
-  var hOn = o.ht !== 'off' && o.screen === 'halftone';
-  var heightCm = o.cm * EH/EW;
-
-  var cells = [
-    ['Tamaño impreso', o.cm.toFixed(1)+' × '+heightCm.toFixed(1)+' <small>cm</small>', ''],
-    ['Píxeles', EW+' × '+EH, ''],
-    ['Cobertura de tinta', pct.toFixed(1)+' <small>%</small>', ''],
-    ['Semitransparencias', m.partial===0 ? '0 <small>correcto</small>' : m.partial+' <small>¡fallo!</small>',
-     m.partial===0 ? 'good' : 'bad']
+function readout(img,EW,EH){
+  var m=measure(img), pct=m.ink/m.total*100;
+  var px=o.cell, lpi=25.4/o.dotmm, hOn=o.ht!=='off';
+  var hcm=o.cm*EH/EW;
+  var cells=[
+    ['Tamaño impreso', o.cm.toFixed(1)+' × '+hcm.toFixed(1)+' <small>cm</small>',''],
+    ['Píxeles', EW+' × '+EH,''],
+    ['Cobertura de tinta', pct.toFixed(1)+' <small>%</small>',''],
+    ['Semitransparencias', m.partial===0?'0 <small>correcto</small>':m.partial+' <small>¡fallo!</small>',
+      m.partial===0?'good':'bad']
   ];
   if(hOn){
-    cells.push(['Píxeles por celda', pxCell.toFixed(1), pxCell>=12?'good':'bad']);
-    cells.push(['Celda de trama', cellMm.toFixed(2)+' <small>mm</small>', '']);
+    cells.push(['Punto', o.dotmm.toFixed(2)+' <small>mm · '+lpi.toFixed(0)+' lpi</small>','']);
+    cells.push(['Px por celda', px.toFixed(1), px>=12?'good':'bad']);
   }
-  $('readout').innerHTML = cells.map(function(c){
+  $('readout').innerHTML=cells.map(function(c){
     return '<div class="cell '+c[2]+'"><div class="k">'+c[0]+'</div><div class="v">'+c[1]+'</div></div>';
   }).join('');
 
-  var notes = [];
-  if(hOn && pxCell < 12){
-    notes.push(['warn','Solo '+pxCell.toFixed(1)+' píxeles por celda. El punto no cabe y saldrá roto: baja la lineatura a '+
-      Math.floor(o.dpi/12)+' lpi o sube la resolución.']);
-  }
-  if(hOn && garment !== '#FFFFFF' && o.lpi > 45){
-    notes.push(['warn','En prenda oscura la base blanca engorda el punto. Por encima de 45 lpi el degradado se cierra en mancha.']);
-  }
-  if(o.ht === 'whole' && pct > 0 && pct < 40 && o.mode.indexOf('lineart') === 0){
-    notes.push(['','Un dibujo a línea casi no tiene medios tonos que tramar: el semitono solo le come las líneas finas. Para lineart usa <b>Bordes</b>.']);
-  }
-  $('notes').innerHTML = notes.map(function(n){
-    return '<div class="note '+n[0]+'">'+(n[0]==='warn'?'<span class="ic">!</span>':'')+'<span>'+n[1]+'</span></div>';
+  var n=[];
+  if(hOn && px<12) n.push(['warn','Solo '+px.toFixed(1)+' píxeles por celda: el punto no cabe y saldrá roto. Sube la resolución o agranda el punto.']);
+  if(hOn && o.dotmm<0.35) n.push(['warn','Un punto de '+o.dotmm.toFixed(2)+' mm no agarra bien sobre tela. Por debajo de 0,35 mm se pierde al curar.']);
+  if(o.ht==='all' && o.sep==='cmyk' && o.mode==='keep' && garment!=='#FFFFFF' && !o.wbase)
+    n.push(['','Sobre prenda que no es blanca, la trama CMYK necesita base blanca debajo. Tu RIP suele generarla; si no, actívala en Salida.']);
+  if(o.matte!=='none' && o.choke<0) n.push(['','Estás engordando el recorte. En DTF lo habitual es encogerlo 1 px para comerse el halo.']);
+  $('notes').innerHTML=n.map(function(x){
+    return '<div class="note '+x[0]+'">'+(x[0]==='warn'?'<span class="ic">!</span>':'')+'<span>'+x[1]+'</span></div>';
   }).join('');
 }
 
-/* ---------------- carga de imagen ---------------- */
+/* ---- cuentagotas sobre el lienzo ---- */
+$('eye').onclick=function(){
+  picking=!picking;
+  $('eye').setAttribute('aria-pressed',picking?'true':'false');
+  $('view').classList.toggle('pick',picking);
+};
+$('view').addEventListener('click',function(e){
+  if(!picking||!src) return;
+  var cv=$('view'), r=cv.getBoundingClientRect();
+  var x=Math.round((e.clientX-r.left)/r.width*srcW);
+  var y=Math.round((e.clientY-r.top)/r.height*srcH);
+  x=Math.max(0,Math.min(srcW-1,x)); y=Math.max(0,Math.min(srcH-1,y));
+  var p=src.getContext('2d',{willReadFrequently:true}).getImageData(x,y,1,1).data;
+  var hx='#'+[p[0],p[1],p[2]].map(function(v){
+    return ('0'+v.toString(16)).slice(-2);
+  }).join('');
+  o.key=hx; $('key').value=hx;
+  picking=false;
+  $('eye').setAttribute('aria-pressed','false');
+  cv.classList.remove('pick');
+  render();
+});
+
 function load(file){
-  if(!file || !/^image\//.test(file.type)) return;
-  var url = URL.createObjectURL(file);
-  var im = new Image();
-  im.onload = function(){
-    srcW = im.naturalWidth; srcH = im.naturalHeight;
-    src = document.createElement('canvas');
-    src.width = srcW; src.height = srcH;
-    src.getContext('2d').drawImage(im,0,0);
+  if(!file||!/^image\//.test(file.type)) return;
+  var url=URL.createObjectURL(file), im=new Image();
+  im.onload=function(){
+    srcW=im.naturalWidth; srcH=im.naturalHeight;
+    src=document.createElement('canvas');
+    src.width=srcW; src.height=srcH;
+    src.getContext('2d',{willReadFrequently:true}).drawImage(im,0,0);
     URL.revokeObjectURL(url);
-    $('drop').hidden = true;
-    $('view').hidden = false;
-    $('save').disabled = false;
-    $('srcinfo').textContent = srcW+'×'+srcH+' px';
+    $('drop').hidden=true; $('view').hidden=false; $('save').disabled=false;
+    $('srcinfo').textContent=srcW+'×'+srcH+' px';
     render();
   };
-  im.onerror = function(){
+  im.onerror=function(){
     URL.revokeObjectURL(url);
-    $('srcinfo').textContent = 'no se pudo leer el archivo';
+    $('srcinfo').textContent='no se pudo leer el archivo';
   };
-  im.src = url;
+  im.src=url;
 }
 
-/* ---------------- guardar ---------------- */
 function busy(t){
-  if(busyEl){ busyEl.remove(); busyEl = null; }
+  if(busyEl){ busyEl.remove(); busyEl=null; }
   if(!t) return;
-  busyEl = document.createElement('div');
-  busyEl.className = 'busy'; busyEl.textContent = t;
+  busyEl=document.createElement('div');
+  busyEl.className='busy'; busyEl.textContent=t;
   document.body.appendChild(busyEl);
 }
 
@@ -784,142 +984,149 @@ async function save(){
   busy('Renderizando a tamaño final…');
   await new Promise(function(r){ setTimeout(r,30); });
   try{
-    var ex = exportSize();
-    o.cell = o.dpi/o.lpi;
-    var r = build(src, ex[0], ex[1], o);
-    var out = r.canvas;
-
+    var ex=exportSize();
+    syncUI();
+    var r=build(src,ex[0],ex[1],o), out=r.canvas;
     if(o.trim){
-      var b = contentBox(r.img);
+      var b=contentBox(r.img);
       if(b){
-        var pad = Math.round(o.dpi/300*20);
-        var t = document.createElement('canvas');
-        t.width = b.w + pad*2; t.height = b.h + pad*2;
-        t.getContext('2d').drawImage(out, b.x, b.y, b.w, b.h, pad, pad, b.w, b.h);
-        out = t;
+        var pad=Math.round(o.dpi/300*20);
+        var t=document.createElement('canvas');
+        t.width=b.w+pad*2; t.height=b.h+pad*2;
+        t.getContext('2d').drawImage(out,b.x,b.y,b.w,b.h,pad,pad,b.w,b.h);
+        out=t;
       }
     }
-
-    var blob = await new Promise(function(res){ out.toBlob(res, 'image/png'); });
+    var blob=await new Promise(function(res){ out.toBlob(res,'image/png'); });
     if(!blob) throw new Error('no se pudo generar el PNG');
 
-    var name = 'DTF_' + o.cm + 'cm_' + o.dpi + 'ppp' +
-               (o.ht !== 'off' ? '_' + o.lpi + 'lpi' : '') + '.png';
+    var name='DTF_'+o.cm+'cm_'+o.dpi+'ppp'+
+      (o.ht!=='off'?'_'+o.dotmm.toFixed(2)+'mm':'')+'.png';
 
     // En claude.ai el sandbox bloquea las descargas y hay que pedirlas a la
     // plataforma; como web normal vale el <a download> de toda la vida.
-    var dl = null;
-    try{ dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; }catch(_){}
-
+    var dl=null;
+    try{ dl=(window.claude&&window.claude.use)?await window.claude.use('downloads'):null; }catch(_){}
     if(dl){
-      busy('Esperando confirmacion...');
-      await dl.save({filename:name, data:blob});
-    }else{
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = name;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+      busy('Esperando confirmación…');
+      await dl.save({filename:name,data:blob});
+    } else {
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download=name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },4000);
     }
     busy('Guardado');
-    setTimeout(function(){ busy(null); }, 1600);
+    setTimeout(function(){ busy(null); },1600);
   }catch(e){
     busy(null);
-    if(e && e.code === 'declined') return;
-    alert('No se pudo guardar: ' + ((e && e.message) || e));
+    if(e&&e.code==='declined') return;
+    alert('No se pudo guardar: '+((e&&e.message)||e));
   }
 }
 
-/* ---------------- cableado ---------------- */
-function bindRange(id, key, fmt){
-  var el = $(id), out = $(id+'v');
-  el.addEventListener('input', function(){
-    o[key] = +el.value;
-    out.textContent = fmt ? fmt(+el.value) : el.value;
+/* ---- cableado ---- */
+function bindRange(id,key,fmt){
+  var el=$(id), out=$(id+'v');
+  var upd=function(){
+    o[key]=+el.value;
+    out.textContent=fmt?fmt(+el.value):el.value;
     schedule();
-  });
-  out.textContent = fmt ? fmt(+el.value) : el.value;
+  };
+  el.addEventListener('input',upd);
+  out.textContent=fmt?fmt(+el.value):el.value;
 }
-function bindVal(id, key, num){
-  var el = $(id);
-  el.addEventListener('input', function(){
-    o[key] = num ? +el.value : el.value;
-    if(id==='mode') $('modehint').textContent = HINTS[o.mode];
+function bindVal(id,key,num){
+  var el=$(id);
+  el.addEventListener('input',function(){
+    o[key]=num?+el.value:el.value;
     schedule();
   });
 }
 
-$('pick').onclick = function(){ $('file').click(); };
-$('drop').onclick = function(){ $('file').click(); };
-$('file').onchange = function(e){ load(e.target.files[0]); };
+$('pick').onclick=function(){ $('file').click(); };
+$('drop').onclick=function(){ $('file').click(); };
+$('file').onchange=function(e){ load(e.target.files[0]); };
 
-var pad = $('pad');
+var pad=$('pad');
 ['dragenter','dragover'].forEach(function(ev){
-  pad.addEventListener(ev, function(e){ e.preventDefault(); $('drop').classList.add('over'); });
+  pad.addEventListener(ev,function(e){ e.preventDefault(); $('drop').classList.add('over'); });
 });
 ['dragleave','drop'].forEach(function(ev){
-  pad.addEventListener(ev, function(e){ e.preventDefault(); $('drop').classList.remove('over'); });
+  pad.addEventListener(ev,function(e){ e.preventDefault(); $('drop').classList.remove('over'); });
 });
-pad.addEventListener('drop', function(e){
-  if(e.dataTransfer && e.dataTransfer.files[0]) load(e.dataTransfer.files[0]);
+pad.addEventListener('drop',function(e){
+  if(e.dataTransfer&&e.dataTransfer.files[0]) load(e.dataTransfer.files[0]);
 });
 
-bindVal('mode','mode'); bindVal('bg','bg'); bindVal('screen','screen'); bindVal('shape','shape');
-bindVal('lpi','lpi',1); bindVal('ang','ang',1); bindVal('cm','cm',1); bindVal('dpi','dpi',1);
-bindRange('tol','tol'); bindRange('thr','thr'); bindRange('fw','fw', function(v){ return v+' %'; });
-$('trim').onchange = function(){ o.trim = $('trim').checked; };
-$('grid').onchange = render;
-$('save').onclick = save;
+bindVal('mode','mode'); bindVal('ink','ink'); bindVal('matte','matte');
+bindVal('key','key'); bindVal('sep','sep'); bindVal('shape','shape');
+bindVal('grad','grad');
+bindVal('ang','ang',1); bindVal('choke','choke',1); bindVal('speck','speck',1);
+bindVal('dmin','dmin',1); bindVal('dmax','dmax',1);
+bindVal('rcx','rcx',1); bindVal('rcy','rcy',1);
+bindVal('cm','cm',1); bindVal('dpi','dpi',1);
+
+bindRange('tin','tin'); bindRange('tout','tout');
+bindRange('spill','spill',function(v){return v+' %';});
+bindRange('thr','thr');
+bindRange('dot','dotmm',function(v){return v.toFixed(2)+' mm';});
+bindRange('gain','gain',function(v){return v+' %';});
+bindRange('fw','fw',function(v){return v+' %';});
+bindRange('r0','r0',function(v){return v+' %';});
+bindRange('r1','r1',function(v){return v+' %';});
+bindRange('lang','lang',function(v){return v+'°';});
+bindRange('lpos','lpos',function(v){return v+' %';});
+bindRange('lspan','lspan',function(v){return v+' %';});
+
+$('trim').onchange=function(){ o.trim=$('trim').checked; };
+$('wbase').onchange=function(){ o.wbase=$('wbase').checked; schedule(); };
+$('ginv').onchange=function(){ o.ginv=$('ginv').checked; schedule(); };
+$('grid').onchange=render;
+$('save').onclick=save;
+$('gcustom').oninput=function(){ garment=$('gcustom').value; drawSwatches(); render(); };
 
 document.querySelectorAll('[data-ht]').forEach(function(b){
-  b.onclick = function(){
-    o.ht = b.dataset.ht;
+  b.onclick=function(){
+    o.ht=b.dataset.ht;
     document.querySelectorAll('[data-ht]').forEach(function(x){
-      x.setAttribute('aria-pressed', x===b ? 'true':'false');
+      x.setAttribute('aria-pressed',x===b?'true':'false');
     });
     schedule();
   };
 });
 document.querySelectorAll('[data-side]').forEach(function(b){
-  b.onclick = function(){
-    var k = b.dataset.side;
-    o.sides[k] = !o.sides[k];
-    b.setAttribute('aria-pressed', o.sides[k] ? 'true':'false');
+  b.onclick=function(){
+    var k=b.dataset.side;
+    o.sides[k]=!o.sides[k];
+    b.setAttribute('aria-pressed',o.sides[k]?'true':'false');
     schedule();
   };
 });
 
-$('modehint').textContent = HINTS[o.mode];
-drawSwatches();
+drawSwatches(); syncUI();
 
-/* Arranca con un arte de ejemplo para que se vea funcionando: un trazo
-   con degradado real, que es lo que el semitono tiene que resolver. */
+/* Arranca con un arte de ejemplo a color: degradados reales y tonos
+   planos, que es justo lo que un semitono tiene que resolver bien. */
 (function demo(){
-  var c = document.createElement('canvas');
-  c.width = 900; c.height = 1100;
-  var g = c.getContext('2d');
-  g.fillStyle = '#fff'; g.fillRect(0,0,900,1100);
-  g.fillStyle = '#111';
-  g.font = '700 150px Archivo, Arial, sans-serif';
-  g.textAlign = 'center';
-  g.fillText('FORJA', 450, 420);
-  g.font = '500 62px Archivo, Arial, sans-serif';
-  g.fillText('DTF · PRUEBA DE TRAMA', 450, 505);
-  var lg = g.createLinearGradient(120,0,780,0);
-  lg.addColorStop(0,'#111'); lg.addColorStop(1,'#fff');
-  g.fillStyle = lg; g.fillRect(120,600,660,150);
-  var rg = g.createLinearGradient(0,820,0,1010);
-  rg.addColorStop(0,'#111'); rg.addColorStop(1,'#fff');
-  g.fillStyle = rg; g.fillRect(120,820,660,190);
-  g.strokeStyle = '#111'; g.lineWidth = 7;
-  g.strokeRect(120,600,660,410);
-  src = c; srcW = 900; srcH = 1100;
-  $('drop').hidden = true; $('view').hidden = false;
-  $('save').disabled = false;
-  $('srcinfo').textContent = 'ejemplo · suelta tu diseño para reemplazarlo';
-  o.ht = 'whole';
-  document.querySelector('[data-ht="whole"]').setAttribute('aria-pressed','true');
+  var c=document.createElement('canvas');
+  c.width=1000; c.height=1000;
+  var g=c.getContext('2d');
+  g.fillStyle='#fff'; g.fillRect(0,0,1000,1000);
+  var rg=g.createRadialGradient(430,380,20,500,500,430);
+  rg.addColorStop(0,'#FFD24A'); rg.addColorStop(.45,'#E8452C'); rg.addColorStop(1,'#5B1270');
+  g.fillStyle=rg; g.beginPath(); g.arc(500,500,400,0,7); g.fill();
+  g.fillStyle='#0F6E8C';
+  g.beginPath(); g.moveTo(500,170); g.lineTo(640,430); g.lineTo(360,430); g.closePath(); g.fill();
+  g.fillStyle='#fff'; g.font='700 116px Archivo, Arial, sans-serif'; g.textAlign='center';
+  g.fillText('FORJA', 500, 700);
+  g.font='500 44px Archivo, Arial, sans-serif';
+  g.fillText('PRUEBA DE TRAMA', 500, 762);
+  src=c; srcW=1000; srcH=1000;
+  $('drop').hidden=true; $('view').hidden=false; $('save').disabled=false;
+  $('srcinfo').textContent='ejemplo · suelta tu diseño para reemplazarlo';
+  o.ht='all';
+  document.querySelector('[data-ht="all"]').setAttribute('aria-pressed','true');
   document.querySelector('[data-ht="off"]').setAttribute('aria-pressed','false');
   render();
 })();

@@ -21,22 +21,49 @@ al 100 %, pero el ojo a distancia lee un difuminado limpio.
 
 ## Funciones
 
-- **Quitar fondo** por luminosidad (ideal para dibujo a línea) o por varita
-  desde las esquinas, que respeta los blancos interiores del diseño.
-- **Alfa binario** con umbral ajustable. Cero semitransparencias, garantizado
-  y medido en pantalla.
-- **Cuatro tratamientos** según la prenda:
-  - *Línea negra — prenda clara*: el trazo se imprime tal cual.
-  - *Tinta blanca — prenda oscura*: rellena la silueta de blanco y deja los
-    negros transparentes, así el dibujo se lee igual que el original sobre tela
-    negra y gasta una fracción de la tinta.
-  - *Negativo*: invierte todo el arte.
-  - *Ilustración a color*: conserva los colores.
-- **Semitono** en los bordes o en todo el diseño. Seis formas de punto,
-  lineatura y ángulo configurables, más difusión ordenada.
-- **Degradado lateral** disuelto en puntos, no en opacidad.
-- **Salida por tamaño real**: fijas el ancho impreso en cm y la resolución, y
-  renderiza a esos píxeles. Recorte automático a la transparencia.
+### Recorte del fondo
+Clave de color con **dos umbrales**: dentro del margen interior el píxel se va
+entero, y entre ese margen y el exterior cae progresivamente — eso es lo que
+conserva el antialias del contorno en vez de dejarlo dentado.
+
+- **Cuentagotas** para tomar el color del fondo del propio arte.
+- **Modo conectado**, que solo quita lo que toca los bordes del lienzo y
+  respeta los blancos interiores del diseño, o **global** por color.
+- **Limpieza del color de borde** (despill): desprenmultiplica el contorno
+  hacia el color clave. Sin esto todo recorte deja un halo que sobre prenda
+  oscura canta muchísimo.
+- **Choke**: encoger el recorte 1-2 px se come el píxel de transición que
+  siempre queda. Es práctica estándar en DTF.
+- **Eliminar motas** sueltas por debajo de un tamaño.
+
+### Semitono
+- **Alcance**: ninguno, solo el degradado, o todo el diseño.
+- **CMYK real**: cuatro tramas independientes con los ángulos clásicos de
+  imprenta (C 15°, M 75°, Y 0°, K 45°). Los ángulos separados son lo que evita
+  el muaré y produce la roseta.
+- **Tamaño del punto en milímetros**, de 0,15 a 4 mm. Eliges tú lo grande o
+  pequeño que lo quieres; la app te dice a cuántos lpi equivale.
+- Seis formas de punto, ángulo libre.
+- **Ganancia de punto** para compensar lo que la tinta engorda al curar sobre
+  tela, y **punto mínimo / máximo** para descartar puntos que no agarrarían y
+  evitar que las sombras se cierren en mancha.
+
+### Degradados posicionales
+Por **lados**, **radial** (con centro, radio sólido y radio final) o **lineal
+en cualquier ángulo** con posición y recorrido. Todos se resuelven en puntos
+sólidos, nunca en opacidad, e invertibles.
+
+### Prenda
+Ocho colores preestablecidos más selector libre, para previsualizar sobre
+cualquier camiseta. Base blanca opcional bajo la trama de color.
+
+### Tratamientos
+- *Conservar colores* — con semitono en «Todo» hace la separación CMYK.
+- *Una sola tinta* — color elegible, el clásico de serigrafía.
+- *Tinta clara conservando la lectura* — rellena de tinta las zonas claras y
+  deja las oscuras transparentes. Sobre prenda oscura el dibujo se lee igual
+  que el original gastando una fracción de tinta.
+- *Negativo*.
 
 ## La parte que importa: píxeles por celda
 
