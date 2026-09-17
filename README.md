@@ -48,6 +48,17 @@ conserva el antialias del contorno en vez de dejarlo dentado.
   tela, y **punto mínimo / máximo** para descartar puntos que no agarrarían y
   evitar que las sombras se cierren en mancha.
 
+### Transparencia garantizada y auditada
+El alfa binario es lo último que toca el pipeline, siempre. Y al exportar no se
+confía en eso: **se cuentan los píxeles** del archivo que se va a escribir, dos
+veces — sobre el render y otra vez sobre el lienzo ya recortado, porque el
+recorte pasa por `drawImage` y conviene comprobar lo que de verdad va al PNG.
+Si apareciera algún píxel a medias se corrige; si no se pudiera, **no se guarda
+nada** y te lo dice. Lo que no lleva tinta sale con alfa 0 absoluto.
+
+La única forma de obtener un fondo opaco es activar *Base blanca* a propósito,
+y entonces la lectura de estado lo marca en ámbar como `OPACO`.
+
 ### Vista y zoom
 Rueda para ampliar, arrastrar para mover, **Ajustar** y **1:1**.
 
@@ -56,6 +67,11 @@ la resolución del archivo final**. Al 1:1, un píxel de pantalla es un píxel d
 PNG, así que estás viendo el punto de trama exacto que se va a imprimir, con la
 misma fase de trama que tendrá el archivo. Es la única forma de juzgar si el
 punto aguanta antes de gastar film.
+
+### Color del semitono
+Cuando la trama va a una sola tinta puedes elegir su color: selector libre más
+seis atajos (negro, blanco, rojo, azul, oro, verde). El mismo control sirve
+para el modo de una tinta y para la tinta clara sobre prenda oscura.
 
 ### Ajustes guardados
 Guarda combinaciones completas con nombre — tu impresora, tus prendas, tus

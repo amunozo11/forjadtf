@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Prepara disenos para film DTF: zoom a resolucion real, recorte con despill y choke, semitono CMYK y ajustes guardables.">
+<meta name="description" content="Prepara disenos para film DTF: zoom a resolucion real, recorte con despill, semitono CMYK o a un color, y alfa 0/255 auditado al exportar.">
 <meta name="theme-color" content="#14171C">
 <title>Forja DTF</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,6 +56,24 @@
   @media (max-width:920px){ main{grid-template-columns:1fr} }
 
   .rail{display:flex; flex-direction:column; gap:11px; min-width:0}
+  /* La columna de controles se desplaza por su cuenta: el lienzo se queda
+     quieto mientras buscas un ajuste abajo del todo. */
+  @media (min-width:921px){
+    .rail{
+      position:sticky; top:10px; padding-right:5px;
+      max-height:calc(100vh - 20px); overflow-y:auto;
+      overscroll-behavior:contain; scrollbar-width:thin;
+      scrollbar-color:var(--line) transparent;
+    }
+    .rail::-webkit-scrollbar{width:9px}
+    .rail::-webkit-scrollbar-track{background:transparent}
+    .rail::-webkit-scrollbar-thumb{
+      background:var(--line); border-radius:9px;
+      border:2px solid var(--bg); background-clip:padding-box;
+    }
+    .rail::-webkit-scrollbar-thumb:hover{background:var(--fg-3);
+      background-clip:padding-box}
+  }
   .box{background:var(--panel); border:1px solid var(--line);
     border-radius:var(--r); overflow:hidden}
   .box > h2{margin:0; font-size:10.5px; text-transform:uppercase;
@@ -197,10 +215,13 @@
               <option value="negative">Negativo (invertir)</option>
             </select>
           </label>
-          <label class="f" id="inkwrap" hidden>
-            <span class="lab">Color de la tinta</span>
-            <input type="color" id="ink" value="#111111">
-          </label>
+          <div class="f" id="inkwrap" hidden>
+            <span class="lab" id="inklab">Color de la tinta</span>
+            <div class="row" style="align-items:center">
+              <input type="color" id="ink" value="#111111" style="flex:1;min-width:70px">
+              <span class="swatches" id="inksw"></span>
+            </div>
+          </div>
           <p class="hint" id="modehint"></p>
         </div>
       </div>
@@ -890,9 +911,14 @@ function build(srcCanvas,o,frame,reach){
     for(y=0;y<H;y++) for(x=0;x<W;x++) dd[(y*W+x)*4+3]*=rampP(x,y);
   }
 
+  /* ALFA BINARIO. Es lo ultimo que toca el alfa, siempre, pase lo que pase
+     antes: lo que no lleva tinta queda a 0 absoluto y lo que la lleva a 255.
+     El film DTF no admite valores intermedios. */
   hardenAlpha(img,o.thr);
+
   if(o.mode==='negative') invertRGB(img);
   else if(o.mode==='mono'||o.mode==='whiteink') paintInk(img,hex2rgb(o.ink));
+  else if(o.mode==='keep'&&o.ht==='all'&&o.sep==='mono') paintInk(img,hex2rgb(o.ink));
 
   ctx.putImageData(img,0,0);
   return {canvas:c,img:img,W:W,H:H};
@@ -937,7 +963,12 @@ function exportSize(){
 }
 
 function syncUI(){
-  $('inkwrap').hidden=!(o.mode==='mono'||o.mode==='whiteink');
+  // El color de tinta manda en tres casos: una sola tinta, tinta clara, y
+  // semitono de todo el diseno a una tinta. En los tres es el mismo control.
+  var monoScreen=(o.ht==='all'&&o.sep==='mono');
+  $('inkwrap').hidden=!(o.mode==='mono'||o.mode==='whiteink'||monoScreen);
+  $('inklab').textContent=monoScreen&&o.mode==='keep'
+    ? 'Color del semitono' : 'Color de la tinta';
   $('sepwrap').hidden=!(o.ht==='all'&&o.mode==='keep');
   $('angwrap').hidden=!(o.ht==='all'&&o.sep==='cmyk'&&o.mode==='keep');
   $('g-sides').hidden=o.grad!=='sides';
@@ -959,6 +990,20 @@ function drawSwatches(){
     b.title=g[1]; b.setAttribute('aria-label','Prenda '+g[1]);
     b.setAttribute('aria-pressed',g[0].toLowerCase()===garment.toLowerCase()?'true':'false');
     b.onclick=function(){ garment=g[0]; drawSwatches(); render(); };
+    host.appendChild(b);
+  });
+}
+
+var INKS=[['#111111','Negro'],['#FFFFFF','Blanco'],['#D92D20','Rojo'],
+  ['#1570EF','Azul'],['#E0A83C','Oro'],['#12B76A','Verde']];
+function drawInkSwatches(){
+  var host=$('inksw'); host.innerHTML='';
+  INKS.forEach(function(c){
+    var b=document.createElement('button');
+    b.type='button'; b.className='sw'; b.style.background=c[0];
+    b.title=c[1]; b.setAttribute('aria-label','Tinta '+c[1]);
+    b.setAttribute('aria-pressed',c[0].toLowerCase()===o.ink.toLowerCase()?'true':'false');
+    b.onclick=function(){ o.ink=c[0]; $('ink').value=c[0]; drawInkSwatches(); render(); };
     host.appendChild(b);
   });
 }
@@ -1036,7 +1081,10 @@ function readout(img,EW,EH,full,r){
     ['Píxeles',EW+' × '+EH,''],
     [full?'Cobertura de tinta':'Tinta en lo visible',pct.toFixed(1)+' <small>%</small>',''],
     ['Semitransparencias',m.partial===0?'0 <small>correcto</small>':m.partial+' <small>¡fallo!</small>',
-      m.partial===0?'good':'bad']
+      m.partial===0?'good':'bad'],
+    ['Fondo', o.wbase&&o.ht==='all'&&o.sep==='cmyk'&&o.mode==='keep'
+      ? 'OPACO <small>base blanca</small>' : '100 % <small>transparente</small>',
+      o.wbase&&o.ht==='all'&&o.sep==='cmyk'&&o.mode==='keep' ? 'bad' : 'good']
   ];
   if(hOn){
     cells.push(['Punto',o.dotmm.toFixed(2)+' <small>mm · '+(25.4/o.dotmm).toFixed(0)+' lpi</small>','']);
@@ -1165,6 +1213,23 @@ async function save(){
     var ex=exportSize();
     var res=build(src,o,{ox:0,oy:0,w:ex[0],h:ex[1],r:1,EW:ex[0],EH:ex[1],full:true},reach);
     var out=res.canvas;
+
+    /* AUDITORIA DE TRANSPARENCIA, sobre los pixeles que realmente se van a
+       escribir. No basta con confiar en el pipeline: se cuenta, y si por lo
+       que sea quedara algun pixel a medias se corrige aqui mismo. Lo que no
+       lleva tinta sale del archivo con alfa 0 absoluto. */
+    var audit=measure(res.img);
+    if(audit.partial>0){
+      hardenAlpha(res.img,o.thr);
+      res.canvas.getContext('2d').putImageData(res.img,0,0);
+      audit=measure(res.img);
+    }
+    if(audit.partial>0){
+      busy(null);
+      alert('No se pudo dejar el alfa limpio: quedan '+audit.partial+
+            ' píxeles a medias. No se ha guardado nada.');
+      return;
+    }
     if(o.trim){
       var b=contentBox(res.img);
       if(b){
@@ -1175,6 +1240,18 @@ async function save(){
         out=t;
       }
     }
+    /* Ultimo control, ya sobre el lienzo recortado: el recorte se hace con
+       drawImage y conviene comprobar lo que de verdad va al PNG, no lo que
+       deberia ir. */
+    var oc=out.getContext('2d',{willReadFrequently:true});
+    var fin=oc.getImageData(0,0,out.width,out.height);
+    var f=measure(fin);
+    if(f.partial>0){
+      hardenAlpha(fin,o.thr);
+      oc.putImageData(fin,0,0);
+      f=measure(fin);
+    }
+
     var blob=await new Promise(function(r){ out.toBlob(r,'image/png'); });
     if(!blob) throw new Error('no se pudo generar el PNG');
     var name='DTF_'+o.cm+'cm_'+o.dpi+'ppp'+
@@ -1191,8 +1268,8 @@ async function save(){
       document.body.appendChild(a); a.click();
       setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },4000);
     }
-    busy('Guardado');
-    setTimeout(function(){ busy(null); },1600);
+    busy('Guardado · '+out.width+'×'+out.height+' px · alfa 0/255 verificado');
+    setTimeout(function(){ busy(null); },2600);
   }catch(e){
     busy(null);
     if(e&&e.code==='declined') return;
@@ -1249,7 +1326,7 @@ padEl.addEventListener('drop',function(e){
   if(e.dataTransfer&&e.dataTransfer.files[0]) load(e.dataTransfer.files[0]);
 });
 
-bindVal('mode','mode'); bindVal('ink','ink');
+bindVal('mode','mode'); bindVal('ink','ink',false,drawInkSwatches);
 bindVal('matte','matte',false,function(){ reachKey=''; });
 bindVal('key','key',false,function(){ reachKey=''; });
 bindVal('sep','sep'); bindVal('shape','shape'); bindVal('grad','grad');
@@ -1335,7 +1412,7 @@ function applyPreset(v){
   document.querySelectorAll('[data-side]').forEach(function(x){
     x.setAttribute('aria-pressed',o.sides[x.dataset.side]?'true':'false');
   });
-  reachKey=''; drawSwatches(); render();
+  reachKey=''; drawSwatches(); drawInkSwatches(); render();
 }
 $('psave').onclick=function(){
   var name=($('pname').value||'').trim();
@@ -1363,7 +1440,7 @@ $('pdel').onclick=function(){
 };
 fillPresets();
 
-drawSwatches(); syncUI();
+drawSwatches(); drawInkSwatches(); syncUI();
 
 /* Arte de ejemplo a color: degradados reales, tonos planos y tipografía,
    que es justo lo que un semitono tiene que resolver bien. */
