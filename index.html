@@ -56,6 +56,10 @@
   @media (max-width:920px){ main{grid-template-columns:1fr} }
 
   .rail{display:flex; flex-direction:column; gap:11px; min-width:0}
+  /* Sin esto los paneles se APLASTAN en vez de desbordar: son hijos de un
+     flex en columna, y al limitar la altura del carril flex-shrink los
+     comprime hasta que caben, asi que nunca aparece la barra. */
+  .rail > .box{flex:0 0 auto}
   /* La columna de controles se desplaza por su cuenta: el lienzo se queda
      quieto mientras buscas un ajuste abajo del todo. */
   @media (min-width:921px){
@@ -181,9 +185,6 @@
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <style>
-  /* Reset base: en claude.ai lo pone la plataforma, aqui hay que traerlo.
-     [hidden] es OBLIGATORIO: el canvas tiene display:block y sin esto
-     seguiria viendose aunque se marque como oculto. */
   :root{ color-scheme: light dark; }
   img{ max-width:100%; }
   [hidden]{ display:none !important; }
