@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Prepara disenos para film DTF: zoom a resolucion real, recorte con despill, semitono CMYK o a un color, y alfa 0/255 auditado al exportar.">
+<meta name="description" content="Prepara disenos para film DTF: recorte con despill, semitono CMYK o por color plano, zoom a resolucion real y alfa 0/255 auditado.">
 <meta name="theme-color" content="#14171C">
 <title>Forja DTF</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -357,6 +357,51 @@
             </label>
           </div>
           <p class="hint">La ganancia compensa lo que el punto engorda al curar sobre tela. El mínimo descarta puntos que no agarrarían.</p>
+
+          <label class="chk" style="border-top:1px solid var(--line-soft);padding-top:11px">
+            <input type="checkbox" id="spot"> Tramar solo un color del arte
+          </label>
+          <div id="spotwrap" hidden style="display:flex;flex-direction:column;gap:11px">
+            <div class="row">
+              <label class="f" style="flex:0 0 72px">
+                <span class="lab">Color</span>
+                <input type="color" id="spotcol" value="#d92d20">
+              </label>
+              <button class="mini" id="eye2" type="button" aria-pressed="false"
+                style="flex:1; padding:8px">Tomar del arte</button>
+            </div>
+            <label class="f">
+              <span class="lab">Tolerancia del color</span>
+              <span class="slrow">
+                <input type="range" id="stol" min="0" max="255" step="1" value="60">
+                <input type="number" class="num mono" id="stoln" min="0" max="255" step="1" value="60">
+              </span>
+            </label>
+            <label class="f">
+              <span class="lab">Suavidad del borde</span>
+              <span class="slrow">
+                <input type="range" id="ssoft" min="1" max="160" step="1" value="30">
+                <input type="number" class="num mono" id="ssoftn" min="1" max="160" step="1" value="30">
+              </span>
+            </label>
+            <label class="f">
+              <span class="lab">Densidad de la trama</span>
+              <span class="slrow">
+                <input type="range" id="sden" min="2" max="100" step="1" value="60">
+                <input type="number" class="num mono" id="sdenn" min="2" max="100" step="1" value="60">
+                <span class="unit">%</span>
+              </span>
+            </label>
+            <label class="chk"><input type="checkbox" id="sshade" checked> Seguir el sombreado de ese color</label>
+            <label class="f">
+              <span class="lab">El resto del diseño</span>
+              <select id="srest">
+                <option value="keep">Se queda sólido</option>
+                <option value="drop">Fuera — separar solo esta tinta</option>
+              </select>
+            </label>
+            <p class="hint" id="spotinfo"></p>
+          </div>
         </div>
       </div>
 
@@ -895,6 +940,53 @@ function build(srcCanvas,o,frame,reach){
   var rampP=ramp?function(x,y){ return ramp(ox+x/r,oy+y/r); }:null;
 
   var cellP=Math.max(1.2,o.cell*r), gx=ox*r, gy=oy*r;
+
+  /* ---- SEMITONO SOLO A UN COLOR (separacion por tinta plana) ----------
+     Se mide la distancia de cada pixel al color elegido: dentro de la
+     tolerancia pertenece a esa tinta, y la suavidad da el desvanecido del
+     borde. Solo esa zona se convierte en puntos; el resto se deja como
+     esta, o se tira si lo que quieres es sacar la plancha de esa tinta. */
+  if(o.spot&&o.ht!=='off'){
+    var sc=hex2rgb(o.spotcol),dsp=img.data,n=W*H,pp,i4,dr2,dg2,db2,dd2,mm2;
+    var sel=new Float32Array(n),lum=new Float32Array(n),hits=0;
+    var lumSel=LUM(sc[0],sc[1],sc[2]),headroom=Math.max(20,255-lumSel);
+    for(pp=0;pp<n;pp++){
+      i4=pp*4;
+      if(!dsp[i4+3]){ sel[pp]=0; continue; }
+      dr2=dsp[i4]-sc[0]; dg2=dsp[i4+1]-sc[1]; db2=dsp[i4+2]-sc[2];
+      dd2=Math.sqrt(dr2*dr2+dg2*dg2+db2*db2);
+      mm2=1-(dd2-o.stol)/o.ssoft;
+      sel[pp]=mm2<0?0:mm2>1?1:mm2;
+      if(sel[pp]>0.5) hits++;
+      lum[pp]=LUM(dsp[i4],dsp[i4+1],dsp[i4+2]);
+    }
+    spotHits=hits/n;
+
+    var cvS=inkCurve(o.gain,o.dmin,o.dmax),base=o.spotden/100;
+    var toneS=function(x,y){
+      var q=y*W+x;
+      if(sel[q]<=0) return 0;
+      var f=base;
+      if(o.sshade){
+        var sh=(255-lum[q])/headroom;
+        f*= sh<0?0:sh>1.6?1.6:sh;
+      }
+      if(rampP) f*=rampP(x,y);
+      return cvS(sel[q]*f);
+    };
+    var mS=halftoneMask(W,H,toneS,cellP,o.ang,o.shape,gx,gy);
+    for(pp=0;pp<n;pp++){
+      i4=pp*4;
+      if(sel[pp]>0.5){ if(!mS[pp]) dsp[i4+3]=0; }
+      else if(o.srest==='drop') dsp[i4+3]=0;
+    }
+    hardenAlpha(img,o.thr);
+    if(o.mode==='negative') invertRGB(img);
+    else if(o.mode==='mono'||o.mode==='whiteink') paintInk(img,hex2rgb(o.ink));
+    ctx.putImageData(img,0,0);
+    return {canvas:c,img:img,W:W,H:H};
+  }
+
   var cmyk=o.ht==='all'&&o.sep==='cmyk'&&o.mode==='keep';
   if(cmyk){
     cmykHalftone(img,cellP,o.shape,o.ang4,o.gain,o.dmin,o.dmax,rampP,o.wbase,gx,gy);
@@ -928,6 +1020,7 @@ function build(srcCanvas,o,frame,reach){
 /* =====================================================================
    INTERFAZ
    ===================================================================== */
+var spotHits=0;
 var $=function(i){ return document.getElementById(i); };
 var src=null,srcW=0,srcH=0,busyEl=null,picking=false;
 var reach=null,reachKey='';
@@ -941,6 +1034,7 @@ var o={
   ang4:{c:15,m:75,y:0,k:45},gain:0,dmin:0,dmax:100,
   grad:'none',sides:{L:false,R:false,T:false,B:false},fw:25,
   rcx:50,rcy:50,r0:30,r1:92,lang:0,lpos:10,lspan:60,ginv:false,
+  spot:false,spotcol:'#d92d20',stol:60,ssoft:30,spotden:60,sshade:true,srest:'keep',
   fitby:'w',cm:28,dpi:600,trim:true,mirror:false,wbase:false,cell:20
 };
 
@@ -972,6 +1066,7 @@ function syncUI(){
     ? 'Color del semitono' : 'Color de la tinta';
   $('sepwrap').hidden=!(o.ht==='all'&&o.mode==='keep');
   $('angwrap').hidden=!(o.ht==='all'&&o.sep==='cmyk'&&o.mode==='keep');
+  $('spotwrap').hidden=!o.spot;
   $('g-sides').hidden=o.grad!=='sides';
   $('g-radial').hidden=o.grad!=='radial';
   $('g-linear').hidden=o.grad!=='linear';
@@ -1096,6 +1191,11 @@ function readout(img,EW,EH,full,r){
   }).join('');
 
   var n=[];
+  if(o.spot&&hOn){
+    var pc=spotHits*100;
+    $('spotinfo').textContent='Ese color cubre el '+pc.toFixed(1)+' % del lienzo.';
+    if(pc<0.05) n.push(['warn','El color elegido no aparece en el arte con esa tolerancia: no se trama nada. Súbela o vuelve a tomarlo con el cuentagotas.']);
+  }
   if(hOn&&px<12) n.push(['warn','Solo '+px.toFixed(1)+' píxeles por celda: el punto no cabe y saldrá roto. Sube la resolución o agranda el punto.']);
   if(hOn&&o.dotmm<.35) n.push(['warn','Un punto de '+o.dotmm.toFixed(2)+' mm no agarra bien sobre tela. Por debajo de 0,35 mm se pierde al curar.']);
   if(!full&&r<1) n.push(['','Estás viendo un trozo ampliado a escala intermedia. Pulsa <b>1:1</b> para ver el punto exacto que se imprimirá.']);
@@ -1149,11 +1249,17 @@ cvEl.addEventListener('pointermove',function(e){
 });
 
 /* ---- cuentagotas ---- */
-$('eye').onclick=function(){
-  picking=!picking;
-  $('eye').setAttribute('aria-pressed',picking?'true':'false');
-  cvEl.classList.toggle('pick',picking);
-};
+/* Un unico cuentagotas con dos destinos: el color de fondo a recortar y
+   el color del arte que se quiere tramar. */
+var pickTarget='key';
+function setPicking(on,target){
+  picking=on; pickTarget=target||pickTarget;
+  $('eye').setAttribute('aria-pressed',(on&&pickTarget==='key')?'true':'false');
+  $('eye2').setAttribute('aria-pressed',(on&&pickTarget==='spot')?'true':'false');
+  cvEl.classList.toggle('pick',on);
+}
+$('eye').onclick=function(){ setPicking(!(picking&&pickTarget==='key'),'key'); };
+$('eye2').onclick=function(){ setPicking(!(picking&&pickTarget==='spot'),'spot'); };
 cvEl.addEventListener('click',function(e){
   if(!picking||!src) return;
   var ex=exportSize(),EW=ex[0],EH=ex[1];
@@ -1168,10 +1274,19 @@ cvEl.addEventListener('click',function(e){
   var sy=Math.max(0,Math.min(srcH-1,Math.round(Y/EH*srcH)));
   var p=src.getContext('2d',{willReadFrequently:true}).getImageData(sx,sy,1,1).data;
   var hx='#'+[p[0],p[1],p[2]].map(function(v){return ('0'+v.toString(16)).slice(-2);}).join('');
-  o.key=hx; $('key').value=hx; reachKey='';
-  picking=false;
-  $('eye').setAttribute('aria-pressed','false');
-  cvEl.classList.remove('pick');
+  if(pickTarget==='spot'){
+    o.spotcol=hx; $('spotcol').value=hx;
+    if(!o.spot){ o.spot=true; $('spot').checked=true; }
+    if(o.ht==='off'){
+      o.ht='all';
+      document.querySelectorAll('[data-ht]').forEach(function(x){
+        x.setAttribute('aria-pressed',x.dataset.ht==='all'?'true':'false');
+      });
+    }
+  } else {
+    o.key=hx; $('key').value=hx; reachKey='';
+  }
+  setPicking(false);
   render();
 });
 
@@ -1343,6 +1458,10 @@ pair('spill','spill'); pair('thr','thr');
 pair('dot','dotmm'); pair('gain','gain'); pair('fw','fw');
 pair('r0','r0'); pair('r1','r1');
 pair('lang','lang'); pair('lpos','lpos'); pair('lspan','lspan');
+pair('stol','stol'); pair('ssoft','ssoft'); pair('sden','spotden');
+bindVal('spotcol','spotcol'); bindVal('srest','srest');
+$('spot').onchange=function(){ o.spot=$('spot').checked; render(); };
+$('sshade').onchange=function(){ o.sshade=$('sshade').checked; schedule(); };
 
 $('trim').onchange=function(){ o.trim=$('trim').checked; };
 $('mirror').onchange=function(){ o.mirror=$('mirror').checked; schedule(); };

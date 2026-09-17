@@ -68,6 +68,21 @@ PNG, así que estás viendo el punto de trama exacto que se va a imprimir, con l
 misma fase de trama que tendrá el archivo. Es la única forma de juzgar si el
 punto aguanta antes de gastar film.
 
+### Tramar solo un color del arte
+Separación por tinta plana, como en serigrafía. Tomas un color del diseño con
+el cuentagotas y **solo esa zona se convierte en puntos**; el resto se queda
+sólido, o desaparece si lo que quieres es sacar la plancha de esa tinta sola.
+
+- **Tolerancia** y **suavidad** definen qué entra en la selección y cómo se
+  desvanece el borde.
+- **Densidad** fija la cobertura de la trama en las zonas de color plano, que
+  si no saldrían sólidas al 100 %.
+- **Seguir el sombreado** modula los puntos con la propia luz y sombra de ese
+  color, para artes con volumen.
+
+La app te dice qué porcentaje del lienzo cubre el color elegido, y avisa si no
+encuentra nada con esa tolerancia.
+
 ### Color del semitono
 Cuando la trama va a una sola tinta puedes elegir su color: selector libre más
 seis atajos (negro, blanco, rojo, azul, oro, verde). El mismo control sirve
